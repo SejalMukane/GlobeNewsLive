@@ -35,9 +35,13 @@ import { useLanguage } from '@/components/LanguageSelector';
 import CommandPalette from '@/components/CommandPalette';
 import BreakingNewsBanner from '@/components/BreakingNewsBanner';
 import TVMode from '@/components/TVMode';
+import PersonalizedDashboard from '@/components/PersonalizedDashboard';
+import PreferencesModal from '@/components/PreferencesModal';
+import CrisisTimelineView from '@/components/CrisisTimelineView';
 import { Signal, MarketData, PredictionMarket, ThreatLevel } from '@/types';
 import { getThreatLevelFromSignals } from '@/lib/classify';
 import { ACTIVE_CONFLICTS } from '@/lib/feeds';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 
 // Dynamic imports for heavy components
 const WarRoom = dynamic(() => import('@/components/WarRoom'), { 
@@ -71,11 +75,24 @@ function playAlertSound() {
   }
 }
 
-type ViewMode = 'dashboard' | 'warroom';
+type ViewMode = 'dashboard' | 'warroom' | 'personalized' | 'timeline';
 type MobileView = 'feed' | 'map' | 'markets' | 'tracking';
 
 export default function Dashboard() {
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
+  const [preferencesModalOpen, setPreferencesModalOpen] = useState(false);
+  const {
+    preferences,
+    isLoaded: preferencesLoaded,
+    updatePreferences,
+    toggleRegion,
+    toggleInterest,
+    setRiskPriority,
+    setMinSeverity,
+    setRiskThreshold,
+    updateNotificationSettings,
+    resetToDefaults,
+  } = useUserPreferences();
   const [activeLayers, setActiveLayers] = useState([
     'flights', 'routes', 'conflicts', 'military', 'chokepoints', 'earthquakes', 
     'nuclear', 'spaceports', 'iran', 'cables', 'pipelines', 
@@ -278,22 +295,34 @@ export default function Dashboard() {
     );
   }
 
-  // War Room View
-  if (viewMode === 'warroom') {
+  // Timeline View
+  if (viewMode === 'timeline') {
     return (
       <div className="h-screen flex flex-col bg-void">
         {/* Mode Toggle */}
         <div className="bg-void border-b border-border-default px-4 py-1.5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto">
             <button
               onClick={() => setViewMode('dashboard')}
-              className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white"
+              className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white whitespace-nowrap"
             >
               📊 DASHBOARD
             </button>
             <button
+              onClick={() => setViewMode('personalized')}
+              className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white whitespace-nowrap"
+            >
+              👁️ MY DASHBOARD
+            </button>
+            <button
+              onClick={() => setViewMode('timeline')}
+              className="px-3 py-1 rounded text-[10px] font-mono bg-accent-green/20 text-accent-green whitespace-nowrap"
+            >
+              🎬 TIMELINE
+            </button>
+            <button
               onClick={() => setViewMode('warroom')}
-              className="px-3 py-1 rounded text-[10px] font-mono bg-accent-red/20 text-accent-red"
+              className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white whitespace-nowrap"
             >
               ⚔️ WAR ROOM
             </button>
@@ -305,14 +334,111 @@ export default function Dashboard() {
             {soundEnabled ? '🔔' : '🔕'} ALERTS
           </button>
         </div>
-        <div className="flex-1 overflow-hidden">
-          <WarRoom signals={signals} conflicts={conflicts} />
+        <div className="flex-1 overflow-hidden p-4">
+          <CrisisTimelineView 
+            signals={signals}
+            isLoading={signalsLoading || signalsValidating}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Personalized Dashboard View
+  if (viewMode === 'personalized') {
+    return (
+      <div className={`h-screen flex flex-col bg-void overflow-hidden ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        {/* Mode Toggle */}
+        <div className="hidden lg:flex bg-void border-b border-border-default px-4 py-1.5 items-center justify-between overflow-x-auto">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setViewMode('dashboard')}
+              className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white hover:bg-white/5 whitespace-nowrap"
+            >
+              📊 DASHBOARD
+            </button>
+            <button
+              onClick={() => setViewMode('personalized')}
+              className="px-3 py-1 rounded text-[10px] font-mono bg-accent-blue/20 text-accent-blue whitespace-nowrap"
+            >
+              👁️ MY DASHBOARD
+            </button>
+            <button
+              onClick={() => setViewMode('timeline')}
+              className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white hover:bg-white/5 whitespace-nowrap"
+            >
+              🎬 TIMELINE
+            </button>
+            <button
+              onClick={() => setViewMode('warroom')}
+              className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white hover:bg-white/5 whitespace-nowrap"
+            >
+              ⚔️ WAR ROOM
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setCommandPaletteOpen(true)}
+              className="flex items-center gap-2 px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white border border-border-subtle hover:border-accent-green/30 transition-colors"
+            >
+              <span>⌘K</span>
+              <span className="hidden xl:inline">Search</span>
+            </button>
+            <span className="text-[9px] text-text-dim font-mono hidden xl:inline">{signals.length} signals</span>
+            <button
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              className={`flex items-center gap-1.5 px-2 py-1 rounded text-[9px] font-mono ${soundEnabled ? 'bg-accent-green/20 text-accent-green' : 'bg-elevated text-text-dim'}`}
+            >
+              {soundEnabled ? '🔔' : '🔕'} ALERTS
+            </button>
+          </div>
+        </div>
+
+        <Header 
+          threatLevel={threatLevel}
+          breakingNews={breakingNews}
+          lastUpdate={lastUpdate}
+          signalCount={signals.length}
+          criticalCount={criticalCount}
+          language={language}
+          onLanguageChange={changeLanguage}
+          isDark={isDark}
+          onThemeToggle={toggleTheme}
+        />
+
+        {/* Personalized Dashboard Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <PersonalizedDashboard
+            preferences={preferences}
+            onSettingsClick={() => setPreferencesModalOpen(true)}
+            isLoading={!preferencesLoaded || signalsLoading || signalsValidating}
+          />
+        </div>
+
+        {/* Preferences Modal */}
+        <PreferencesModal
+          isOpen={preferencesModalOpen}
+          preferences={preferences}
+          onClose={() => setPreferencesModalOpen(false)}
+          onSave={updatePreferences}
+          onReset={resetToDefaults}
+          onToggleRegion={toggleRegion}
+          onToggleInterest={toggleInterest}
+          onSetRiskPriority={setRiskPriority}
+          onSetMinSeverity={setMinSeverity}
+          onSetRiskThreshold={setRiskThreshold}
+          onUpdateNotifications={updateNotificationSettings}
+        />
+
+        <div className="hidden lg:block">
+          <StatsBar activeConflicts={ACTIVE_CONFLICTS.length} militaryAlerts={militaryCount} highSeverity={highCount} criticalSeverity={criticalCount} timeFilter={timeFilter} onTimeFilterChange={setTimeFilter} />
         </div>
       </div>
     );
   }
 
   // Dashboard View
+  const currentViewMode = viewMode as ViewMode;
   return (
     <div className={`h-screen flex flex-col bg-void overflow-hidden ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Command Palette */}
@@ -331,17 +457,45 @@ export default function Dashboard() {
       <BreakingNewsBanner signals={signals} />
 
       {/* Mode Toggle - Desktop */}
-      <div className="hidden lg:flex bg-void border-b border-border-default px-4 py-1.5 items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="hidden lg:flex bg-void border-b border-border-default px-4 py-1.5 items-center justify-between overflow-x-auto">
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <button
             onClick={() => setViewMode('dashboard')}
-            className="px-3 py-1 rounded text-[10px] font-mono bg-accent-green/20 text-accent-green"
+            className={`px-3 py-1 rounded text-[10px] font-mono transition ${
+              currentViewMode === 'dashboard'
+                ? 'bg-accent-green/20 text-accent-green'
+                : 'text-text-dim hover:text-white hover:bg-white/5'
+            }`}
           >
             📊 DASHBOARD
           </button>
           <button
+            onClick={() => setViewMode('personalized')}
+            className={`px-3 py-1 rounded text-[10px] font-mono transition ${
+              currentViewMode === 'personalized'
+                ? 'bg-accent-blue/20 text-accent-blue'
+                : 'text-text-dim hover:text-white hover:bg-white/5'
+            }`}
+          >
+            👁️ MY DASHBOARD
+          </button>
+          <button
+            onClick={() => setViewMode('timeline')}
+            className={`px-3 py-1 rounded text-[10px] font-mono transition ${
+              currentViewMode === 'timeline'
+                ? 'bg-accent-green/20 text-accent-green'
+                : 'text-text-dim hover:text-white hover:bg-white/5'
+            }`}
+          >
+            🎬 TIMELINE
+          </button>
+          <button
             onClick={() => setViewMode('warroom')}
-            className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white hover:bg-white/5"
+            className={`px-3 py-1 rounded text-[10px] font-mono transition ${
+              currentViewMode === 'warroom'
+                ? 'bg-accent-red/20 text-accent-red'
+                : 'text-text-dim hover:text-white hover:bg-white/5'
+            }`}
           >
             ⚔️ WAR ROOM
           </button>

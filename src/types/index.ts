@@ -74,3 +74,120 @@ export interface DashboardState {
   timeFilter: '1h' | '6h' | '24h' | '48h' | '7d';
   activeLayers: string[];
 }
+
+// ===== PERSONALIZED DASHBOARD TYPES =====
+
+export type RiskPriority = 'economy' | 'security' | 'travel' | 'all';
+
+export interface UserPreferences {
+  // Identity
+  userId: string;
+  dashboardName?: string;
+  createdAt: Date;
+  updatedAt: Date;
+
+  // Selected Regions (Countries)
+  regions: string[]; // e.g., ['India', 'USA', 'Middle East']
+
+  // Interest Categories
+  interests: SignalCategory[]; // Which types of signals matter to user
+
+  // Risk Priority Level
+  riskPriority: RiskPriority;
+
+  // Notification Settings
+  notificationSettings: {
+    minSeverity: Severity; // Only notify HIGH, CRITICAL, etc
+    soundEnabled: boolean;
+    desktopNotifications: boolean;
+  };
+
+  // Pinned Events
+  pinnedEventIds: string[];
+
+  // Custom Risk Threshold (0-100)
+  riskThreshold: number;
+}
+
+export interface PersonalizedAlert extends Signal {
+  isPinned: boolean;
+  riskScore: number; // 0-100, specifically for this user's context
+  relevanceScore: number; // How relevant to user's preferences (0-100)
+}
+
+export interface PinnedEvent {
+  id: string;
+  signalId: string;
+  title: string;
+  region: string;
+  category: SignalCategory;
+  pinnedAt: Date;
+  notes?: string;
+}
+
+export interface UserRiskScore {
+  userId: string;
+  overallRisk: number; // 0-100
+  regionRisks: {
+    region: string;
+    risk: number;
+    trend: 'rising' | 'falling' | 'stable';
+  }[];
+  categoryRisks: {
+    category: SignalCategory;
+    risk: number;
+  }[];
+  lastUpdated: Date;
+}
+
+// ===== CRISIS TIMELINE & EVENT LINKING TYPES =====
+
+export interface TimelineEvent {
+  id: string;
+  timestamp: Date;
+  title: string;
+  description?: string;
+  category: SignalCategory;
+  severity: Severity;
+  region: string;
+  impact?: string;
+  source: string;
+  tags: string[]; // For linking: 'oil', 'shipping', 'market', 'military', etc
+}
+
+export interface CrisisTimeline {
+  id: string;
+  name: string; // e.g., "Ukraine Conflict", "Middle East Escalation"
+  region: string;
+  startDate: Date;
+  endDate: Date;
+  events: TimelineEvent[];
+  severity: Severity;
+  description?: string;
+}
+
+export interface TimelineReplayState {
+  isPlaying: boolean;
+  currentIndex: number; // Which event we're at
+  speed: number; // 1x, 2x, 4x
+  playbackTime: Date; // What time we're replaying
+  totalDuration: number; // In seconds
+}
+
+export interface LinkedEvent {
+  id: string;
+  type: 'conflict' | 'market' | 'news' | 'shipping' | 'infrastructure';
+  title: string;
+  timestamp: Date;
+  impact: string; // e.g., "oil price +5%"
+  relationship: 'cause' | 'effect' | 'related';
+  sourceEventId: string;
+}
+
+export interface EventLink {
+  sourceEventId: string;
+  targetEventId: string;
+  relationship: 'causes' | 'triggered_by' | 'correlates_with';
+  strength: number; // 0-100, confidence level
+  description: string;
+}
