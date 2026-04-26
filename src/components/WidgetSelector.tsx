@@ -293,6 +293,13 @@ export const WIDGET_REGISTRY: Omit<WidgetConfig, 'visible'>[] = [
     description: 'Interactive country event timeline with filtering and zoom capabilities',
     defaultSize: { w: 4, h: 12 },
   },
+  {
+    id: 'osint-feed',
+    name: 'OSINT Intelligence Feed',
+    icon: '🧠',
+    description: 'AI-powered intelligence aggregation with causality analysis & blockchain verification',
+    defaultSize: { w: 6, h: 14 },
+  },
 ];
 
 interface WidgetSelectorProps {

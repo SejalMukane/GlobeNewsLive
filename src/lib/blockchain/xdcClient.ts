@@ -67,47 +67,109 @@ function validateEnv(): {
 }
 
 /**
- * Stores event hash on XDC blockchain
+ * Stores event hash on XDC blockchain with improved gas handling
  * @param hash - SHA-256 hash of the event
  * @returns Transaction hash
  */
 export async function storeEventOnBlockchain(hash: string): Promise<string> {
-  try {
-    console.log(`🔗 Starting blockchain transaction for hash: ${hash.substring(0, 16)}...`);
+  const maxRetries = 3;
+  let lastError: any;
 
-    const { rpcUrl, privateKey, contractAddress } = validateEnv();
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(
+        `🔗 Starting blockchain transaction for hash: ${hash.substring(0, 16)}... (attempt ${attempt}/${maxRetries})`
+      );
 
-    // Create provider
-    const provider = new ethers.JsonRpcProvider(rpcUrl);
-    console.log(`✅ Provider connected to XDC: ${rpcUrl}`);
+      const { rpcUrl, privateKey, contractAddress } = validateEnv();
 
-    // Create wallet
-    const wallet = new ethers.Wallet(privateKey, provider);
-    console.log(`✅ Wallet loaded: ${wallet.address}`);
+      // Create provider
+      const provider = new ethers.JsonRpcProvider(rpcUrl);
+      console.log(`✅ Provider connected to XDC: ${rpcUrl}`);
 
-    // Create contract instance
-    const contract = new ethers.Contract(
-      contractAddress,
-      CONTRACT_ABI,
-      wallet
-    );
-    console.log(`✅ Contract instance created: ${contractAddress}`);
+      // Create wallet
+      const wallet = new ethers.Wallet(privateKey, provider);
+      console.log(`✅ Wallet loaded: ${wallet.address}`);
 
-    // Call storeEvent function
-    console.log(`📝 Calling storeEvent with hash: ${hash.substring(0, 16)}...`);
-    const tx = await contract.storeEvent(hash);
-    console.log(`📤 Transaction sent: ${tx.hash}`);
+      // Create contract instance
+      const contract = new ethers.Contract(
+        contractAddress,
+        CONTRACT_ABI,
+        wallet
+      );
+      console.log(`✅ Contract instance created: ${contractAddress}`);
 
-    // Wait for transaction confirmation
-    console.log(`⏳ Waiting for transaction confirmation...`);
-    const receipt = await tx.wait();
-    console.log(`✅ Transaction confirmed! Block: ${receipt.blockNumber}`);
+      // Get current gas price and increase it
+      const feeData = await provider.getFeeData();
+      const gasPrice = feeData.gasPrice || ethers.parseUnits('1', 'gwei');
+      
+      // Increase gas price by 20% for each retry attempt
+      const multiplier = 1 + attempt * 0.2;
+      const adjustedGasPrice = (gasPrice * BigInt(Math.floor(multiplier * 100))) / BigInt(100);
 
-    return tx.hash;
-  } catch (error) {
-    console.error('❌ Blockchain transaction failed:', error);
-    throw error;
+      console.log(
+        `💰 Gas price: ${ethers.formatUnits(adjustedGasPrice, 'gwei')} gwei (attempt multiplier: ${multiplier.toFixed(2)}x)`
+      );
+
+      // Get nonce and add extra delay for retries
+      const nonce = await provider.getTransactionCount(wallet.address);
+      console.log(`📍 Nonce: ${nonce}`);
+
+      // Call storeEvent function with explicit gas parameters
+      console.log(`📝 Calling storeEvent with hash: ${hash.substring(0, 16)}...`);
+      const tx = await contract.storeEvent(hash, {
+        gasPrice: adjustedGasPrice,
+        gasLimit: ethers.toBeHex(100000),
+        nonce: nonce,
+      });
+      console.log(`📤 Transaction sent: ${tx.hash}`);
+
+      // Wait for transaction confirmation (with timeout)
+      console.log(`⏳ Waiting for transaction confirmation...`);
+      const receipt = await Promise.race([
+        tx.wait(1), // Wait for 1 confirmation
+        new Promise((_, reject) =>
+          setTimeout(
+            () => reject(new Error('Transaction confirmation timeout')),
+            60000
+          )
+        ), // 60 second timeout
+      ]);
+
+      if (receipt) {
+        console.log(`✅ Transaction confirmed! Block: ${receipt.blockNumber}`);
+        return tx.hash;
+      }
+    } catch (error: any) {
+      lastError = error;
+      const errorMsg = error?.message || error?.shortMessage || String(error);
+
+      // Check if error is retryable
+      const isRetryable =
+        errorMsg.includes('replacement') ||
+        errorMsg.includes('nonce') ||
+        errorMsg.includes('timeout') ||
+        errorMsg.includes('TIMEOUT');
+
+      if (isRetryable && attempt < maxRetries) {
+        const waitTime = attempt * 2000; // 2s, 4s, 6s
+        console.warn(
+          `⚠️  Attempt ${attempt} failed (retryable): ${errorMsg}. Retrying in ${waitTime}ms...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+        continue;
+      } else {
+        console.error(`❌ Blockchain transaction failed (not retryable): ${errorMsg}`);
+        throw error;
+      }
+    }
   }
+
+  // All retries failed
+  console.error(
+    `❌ All ${maxRetries} retry attempts failed. Last error: ${lastError?.message || lastError}`
+  );
+  throw lastError;
 }
 
 /**

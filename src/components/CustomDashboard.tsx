@@ -128,6 +128,7 @@ import TradePolicyPanel from "./TradePolicyPanel";
 import IntelligenceGapBadge from "./IntelligenceGapBadge";
 import SignalModalPanel from "./SignalModalPanel";
 import CountryTimelinePanel from "./CountryTimelinePanel";
+import OSINTPanel from "./OSINTPanel";
 
 import { Signal, MarketData } from "@/types";
 
@@ -873,6 +874,8 @@ export default function CustomDashboard({
         return <SignalModalPanel />;
       case "country-timeline":
         return <CountryTimelinePanel />;
+      case "osint-feed":
+        return <OSINTPanel />;
       default:
         return (
           <div className="flex items-center justify-center h-full text-white/20 text-xs font-mono">

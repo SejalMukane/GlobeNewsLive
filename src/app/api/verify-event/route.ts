@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateHash, isValidHash } from '@/lib/blockchain/hashGenerator';
 import { storeEventOnBlockchain, getExplorerLink } from '@/lib/blockchain/xdcClient';
+import { broadcastEvent, getEventSummary } from '@/lib/broadcast/broadcaster';
 
 /**
  * Standardized API response format
@@ -186,6 +187,21 @@ export async function POST(request: NextRequest): Promise<NextResponse<VerifyEve
 
       const duration = Date.now() - startTime;
       console.log(`⏱️ Total verification time: ${duration}ms`);
+
+      // Step 9: Broadcast to Twitter & Telegram (fire and forget)
+      const explorerLink = getExplorerLink(txHash);
+      broadcastEvent({
+        title: event.title || 'Crisis Event',
+        description: event.description || event.details || 'A critical event has been verified on blockchain',
+        location: event.location || event.region || 'Global',
+        severity: event.severity || 'HIGH',
+        type: event.type || 'Unknown',
+        txHash,
+        explorerLink,
+        timestamp: new Date().toISOString(),
+      }).catch(err => console.error('🔴 Broadcast error:', err));
+
+      console.log(`📢 Broadcasting triggered for: ${event.title}`);
 
       return NextResponse.json<VerifyEventResponse>(
         createResponse(true, hash, txHash, false),
