@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { ThreatLevel } from '@/types';
 import LanguageSelector from './LanguageSelector';
 import { Language, t } from '@/lib/i18n';
@@ -152,6 +153,16 @@ export default function Header({ threatLevel, breakingNews, lastUpdate, signalCo
         
         {/* Time + Language */}
         <div className="flex items-center gap-4">
+          {/* Intelligence Link */}
+          <Link
+            href="/intelligence"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-blue-500/30 hover:border-blue-500/60 bg-blue-500/10 hover:bg-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/20"
+            title="Open OSINT Intelligence Feed"
+          >
+            <span className="text-lg">🧠</span>
+            <span className="text-[9px] font-mono text-blue-300 hidden sm:inline font-bold">INTEL</span>
+          </Link>
+
           {/* Theme Toggle */}
           {onThemeToggle && (
             <ThemeToggle isDark={isDark} onToggle={onThemeToggle} />
