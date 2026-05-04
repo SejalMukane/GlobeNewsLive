@@ -1,60 +1,118 @@
-# 🌐 XDC World Feed
+# 🌐 GlobeNewsLive - Missile & Satellite Intelligence Dashboard
 
-**Real-time global conflict intelligence dashboard. Open source. No login required.**
+**Real-time missile test tracking, satellite intelligence, and AI-powered conflict monitoring. Open source. No login required.**
 
-[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://feed.xdc.network)
+[![Live Demo](https://img.shields.io/badge/demo-live-green)](https://globe-news-live.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
 
-![XDC World Feed Screenshot](https://feed.xdc.network/og-image.png)
+![GlobeNewsLive Dashboard](https://globe-news-live.vercel.app/og-image.png)
+
+---
 
 ## 🚀 Features
 
-### Real-Time Intelligence
-- **📡 Signal Feed** — Live news from Reuters, BBC, Al Jazeera, Guardian, France24, DW News, Defense One, Breaking Defense
-- **🎯 Threat Classification** — Auto-classifies news as CRITICAL, HIGH, MEDIUM, LOW using keyword analysis
-- **⚠️ Breaking Alerts** — Flashing banner for critical events with optional sound alerts
-- **🧠 AI Situation Briefs** — Algorithm-generated intelligence summaries with threat assessments (v2.0)
+### 🎯 Missile Intelligence
+- **🚀 3D Missile Globe** — Interactive Cesium.js + Three.js globe with missile trajectories, launch sites, and facility markers
+- **📊 Test Statistics** — Total tests, success rates, tests by year, last test date
+- **📈 Charts & Analytics** — Timeline charts, monthly activity, outcome breakdown, missile type analysis, range distribution
+- **🏭 Facility Analysis** — Top facilities by test count with locations on globe
+- **📋 Recent Tests Table** — Sortable table with date, missile name, facility, outcome, distance, and apogee
 
-### Interactive Map
-- **🗺️ World Map** — Dark-themed MapLibre GL with multiple layers
-- **🌍 3D Globe** — Three.js rotating earth with live conflict pins (War Room mode)
+### 🛰️ Satellite Intelligence
+- **🌍 3D Satellite Orbits** — Pure HTML5 Canvas visualization with animated satellites, orbit paths, and country-specific colors
+- **📡 Satellite Inventory** — Total launches, active/decayed satellites, launch dates, catalog numbers
+- **🔍 Mission Classification** — Spy/Reconnaissance, Communications, Earth Observation, Lunar/Mars missions
+- **📍 Real-time Tracking** — TLE data from Celestrak/NORAD with position tracking
+
+### 🤖 AI Analysis Layer
+- **🧠 Groq AI Integration** — `llama-3.3-70b-versatile` with 5-key rotation and automatic failover
+- **📊 Escalation Probability** — Likelihood of conflict escalation per event
+- **🔍 Root Cause Analysis** — Underlying causes of detected events
+- **👥 Stakeholder Identification** — Key actors and entities involved
+- **⛓️ Causal Chain Analysis** — Event sequence and relationship mapping
+- **💹 Market Impact Assessment** — Economic implications of events
+
+### ⚠️ Real-Time Alerts
+- **🔔 Alert Types** — New test detection, success rate drops, weekly summaries
+- **📱 Telegram Integration** — Instant CRITICAL event notifications with severity-based emoji
+- **🎛️ Alert Dashboard** — Real-time monitoring with acknowledge functionality and alert history
+- **⚙️ Configurable Thresholds** — Customizable severity levels and alert rules
+
+### 📈 Predictive Analytics
+- **📉 Trend Analysis** — Linear regression with confidence intervals and R² values
+- **🔮 6-Month Forecasting** — Test frequency prediction with confidence intervals
+- **🔄 Pattern Detection** — Seasonal, cyclical, spike, and anomaly detection
+- **🚀 Missile Type Analysis** — Success rates, development timelines, capability assessment
+
+### 📰 News Integration
+- **📡 Real-time News** — NewsAPI + GDELT integration with country-specific queries
+- **🌐 Language Support** — English for all countries, Hindi for India
+- **📑 Article Summaries** — Direct links with source attribution
+- **🔄 Refresh Functionality** — Manual refresh with fallback demo data
+
+### 🔗 Blockchain Verification
+- **⛓️ XDC Network** — Apothem Testnet integration for immutable event records
+- **🔐 Event Hashing** — Cryptographic verification of all detected events
+- **🔍 Public Verification** — Block explorer links for transparency
+
+### 👁️ Personalized Dashboard
+- **⚙️ User Preferences** — localStorage persistence with auto-save
+- **📍 Region Management** — Add/remove monitored regions
+- **🎯 Interest Categories** — Select signal categories (conflict, cyber, markets, etc.)
+- **🔥 Risk Priorities** — economy | security | travel | all
+- **📊 Risk Threshold** — Adjustable slider (0-100)
+- **⭐ Event Pinning** — Star/unstar important events
+- **🔔 Notification Settings** — Severity filters, sound alerts, desktop notifications
+
+### ⏯️ Crisis Timeline Replay
+- **📅 Chronological Replay** — Watch events unfold in real-time
+- **⏭️ Playback Controls** — Play/pause/skip with speed adjustment (0.5x, 1x, 2x, 4x)
+- **🔗 Event Linking** — Cause-effect chains with confidence scoring
+- **📊 Event Clustering** — Key moment detection for high-impact sequences
+- **🕐 Time Range Selection** — 24h, 7d, 30d views
+
+### 🗺️ Interactive World Map
+- **🌍 3D Globe** — Three.js rotating earth with live conflict pins
 - **⚔️ Conflict Zones** — 10 active conflict markers (Ukraine, Gaza, Sudan, etc.)
 - **🎖️ Military Bases** — 15 US/NATO bases worldwide
 - **⚓ Strategic Chokepoints** — Strait of Hormuz, Suez, Malacca, etc.
 - **🌍 Earthquakes** — Live USGS data (M4.5+ past 24h)
 
-### War Room Mode
-- **⚔️ Theater Selector** — Focus on Global, Ukraine, Middle East, Sahel/Sudan, Asia-Pacific
-- **🌐 Live 3D Globe** — Interactive Three.js globe with auto-rotation
-- **📊 Conflict Stats** — Active wars, insurgencies, high intensity zones
-- **🔴 ACLED-style Events** — Real conflict event feed by theater
-
-### Market Intelligence
+### 📊 Market Intelligence
 - **📈 Live Markets** — S&P 500, Oil, Gold, EUR/USD, BTC, ETH
-- **📊 Trading Charts** — TradingView widget with Gold, Silver, Bitcoin, Oil, S&P 500
+- **📊 Trading Charts** — TradingView widget with multiple assets
 - **🎯 Prediction Markets** — Polymarket geopolitical contracts with probability bars
 
-### Tracking
+### 📡 Tracking
 - **✈️ Flight Tracking** — ADS-B Exchange embed (military + civilian)
 - **🚢 Ship Tracking** — MarineTraffic embed (Strait of Hormuz focus)
 - **🌍 Earthquake Monitor** — USGS live feed with magnitude badges
 
-### Mobile Responsive
+### 📱 Mobile Responsive
 - **📱 4-tab mobile layout** — Feed / Map / Markets / Track
 - **🔔 Push-style badges** — Critical count on mobile nav
 - **👆 Touch-optimized** — Larger tap targets, swipeable panels
+
+---
 
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| Framework | Next.js 14 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Styling | Tailwind CSS |
+| 3D Globe | Cesium.js + Three.js |
+| Satellite Viz | HTML5 Canvas (no dependencies) |
 | Map | MapLibre GL JS + Carto dark tiles |
-| Charts | TradingView Widget |
+| Charts | TradingView Widget + Custom Canvas |
+| AI | Groq API (llama-3.3-70b-versatile) |
 | State | React Hooks + SWR |
-| Hosting | Any Node.js server + nginx |
+| Notifications | Telegram Bot API |
+| Blockchain | XDC Network (Apothem Testnet) |
+| Hosting | Vercel |
+
+---
 
 ## 📦 Installation
 
@@ -66,8 +124,8 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/xdc-world-feed.git
-cd xdc-world-feed
+git clone https://github.com/your-username/globenews-live.git
+cd globenews-live
 
 # Install dependencies
 npm install
@@ -88,122 +146,83 @@ npm run build
 npm start
 ```
 
+---
+
 ## 🚀 Deployment
 
-### Option 1: PM2 (Recommended)
+### Vercel (Recommended)
 
 ```bash
-# Build the app
-npm run build
+# Install Vercel CLI
+npm i -g vercel
 
-# Start with PM2
-pm2 start npm --name "xdc-world-feed" -- start
-
-# Save PM2 config
-pm2 save
-pm2 startup
+# Deploy
+vercel --prod
 ```
 
-### Option 2: Docker
+### Environment Variables
 
-```dockerfile
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --production
-COPY . .
-RUN npm run build
-EXPOSE 3400
-CMD ["npm", "start"]
+Create `.env.local`:
+
+```env
+# Required for AI Analysis
+GROQ_API_KEY_1=your_groq_key_1
+GROQ_API_KEY_2=your_groq_key_2
+GROQ_API_KEY_3=your_groq_key_3
+GROQ_API_KEY_4=your_groq_key_4
+GROQ_API_KEY_5=your_groq_key_5
+
+# Required for Telegram Notifications
+TELEGRAM_BOT_TOKEN=your_bot_token
+TELEGRAM_CHAT_ID=your_chat_id
+
+# Required for News
+NEWSAPI_KEY=your_newsapi_key
+
+# Optional
+NASA_FIRMS_KEY=your_nasa_key
 ```
 
-### Nginx Configuration
+---
 
-```nginx
-server {
-    server_name feed.xdc.network;
+## 📡 API Endpoints
 
-    location /.well-known/acme-challenge/ {
-        root /var/www/html;
-    }
+### Core APIs
+| Endpoint | Purpose | Method |
+|----------|---------|--------|
+| `/api/osint-feed` | OSINT data aggregation | GET |
+| `/api/predictions` | Predictive analytics | GET |
+| `/api/alerts` | Alert management | GET/POST |
+| `/api/data-updates` | Data source monitoring | GET/POST |
+| `/api/test-telegram` | Telegram bot testing | GET |
+| `/api/missile-viz` | Missile visualization data | GET |
+| `/api/missiles` | Missile database | GET |
+| `/api/verify-event` | Blockchain verification | POST |
+| `/api/missile-news` | Missile-related news | GET |
+| `/api/satellites` | Satellite data | GET |
 
-    location / {
-        proxy_pass http://127.0.0.1:3400;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_read_timeout 86400s;
-    }
+### External APIs
+| Service | Usage |
+|---------|-------|
+| NewsAPI | Real-time news |
+| GDELT | Global events database |
+| Celestrak | Satellite TLE data |
+| Groq | AI analysis |
+| XDC | Blockchain verification |
+| CoinGecko | Crypto prices |
+| Polymarket | Prediction markets |
+| USGS | Earthquake data |
 
-    listen 443 ssl;
-    ssl_certificate /etc/letsencrypt/live/feed.xdc.network/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/feed.xdc.network/privkey.pem;
-}
-
-server {
-    listen 80;
-    server_name feed.xdc.network;
-    return 301 https://$host$request_uri;
-}
-```
-
-### SSL with Certbot
-
-```bash
-certbot certonly --webroot -w /var/www/html -d feed.xdc.network
-```
-
-## 📡 Public API (v2.0)
-
-All endpoints are free, no API key required.
-
-```bash
-# Get live signals
-curl https://feed.xdc.network/api/signals
-
-# Get AI situation brief
-curl https://feed.xdc.network/api/brief
-
-# Get market data
-curl https://feed.xdc.network/api/markets
-
-# Get conflict events
-curl https://feed.xdc.network/api/conflicts
-
-# Get earthquake data
-curl https://feed.xdc.network/api/earthquakes
-
-# Get full API documentation
-curl https://feed.xdc.network/api/docs
-```
-
-### Response Examples
-
-**GET /api/brief**
-```json
-{
-  "brief": {
-    "threatLevel": "SEVERE",
-    "headline": "Major escalation in Middle East...",
-    "summary": "Current tracking: 3 military, 8 geopolitical signals...",
-    "keyDevelopments": [
-      { "region": "MIDDLE EAST", "headline": "...", "severity": "CRITICAL" }
-    ],
-    "watchList": ["Elevated military activity..."],
-    "marketImplications": "Risk-off sentiment likely...",
-    "nextHours": "Recommend elevated alert status..."
-  }
-}
-```
+---
 
 ## 📊 Data Sources
 
 | Source | Data | Refresh |
 |--------|------|---------|
+| NTI Database | Missile tests | Manual |
+| Celestrak/NORAD | Satellite TLE | Real-time |
+| NewsAPI | News articles | On-demand |
+| GDELT | Global events | On-demand |
 | Reuters RSS | World news | 60s |
 | BBC World RSS | World news | 60s |
 | Al Jazeera RSS | World news | 60s |
@@ -212,24 +231,112 @@ curl https://feed.xdc.network/api/docs
 | DW News RSS | World news | 60s |
 | Defense One RSS | Defense news | 60s |
 | Breaking Defense RSS | Defense news | 60s |
-| BleepingComputer RSS | Cyber news | 60s |
 | CoinGecko API | Crypto prices | 30s |
 | Polymarket API | Prediction markets | 60s |
 | USGS API | Earthquakes | 120s |
 
-**Total API cost: $0/month** — All sources are free.
+---
+
+## 🎯 Supported Countries
+
+| Country | Color Code | Data Path |
+|---------|-----------|-----------|
+| North Korea | 🔴 Red (#ef4444) | `/missile-viz/data/` |
+| Iran | 🟠 Orange (#f97316) | `/missile-viz/iran/data/` |
+| India | 🔵 Blue (#3b82f6) | `/missile-viz/india/data/` |
+| Pakistan | 🟢 Green (#22c55e) | `/missile-viz/pakistan/data/` |
+
+---
+
+## 📁 Project Structure
+
+```
+globenews-live/
+├── src/
+│   ├── app/
+│   │   ├── page.tsx                    # Main dashboard
+│   │   ├── layout.tsx                  # Root layout
+│   │   ├── globals.css                 # Global styles
+│   │   ├── intelligence/               # Missile dashboard
+│   │   ├── satellites/                 # Satellite page
+│   │   ├── alerts/                     # Alert dashboard
+│   │   ├── predictions/                # Predictive analytics
+│   │   └── api/
+│   │       ├── osint-feed/             # OSINT aggregation
+│   │       ├── predictions/            # Analytics engine
+│   │       ├── alerts/                 # Alert system
+│   │       ├── data-updates/           # Data monitoring
+│   │       ├── test-telegram/          # Telegram testing
+│   │       ├── missile-viz/            # Visualization data
+│   │       ├── missiles/               # Missile database
+│   │       ├── verify-event/           # Blockchain verification
+│   │       ├── missile-news/           # News aggregation
+│   │       └── satellites/             # Satellite data
+│   ├── components/
+│   │   ├── MultiCountryMissileDashboard.tsx  # Main dashboard
+│   │   ├── SatelliteDashboard.tsx      # Satellite page
+│   │   ├── AlertDashboard.tsx          # Alert center
+│   │   ├── PredictiveAnalyticsDashboard.tsx  # Analytics
+│   │   ├── MissileNews.tsx             # News component
+│   │   ├── SatelliteNews.tsx           # Satellite news
+│   │   ├── SatelliteOrbitViz.tsx       # 3D satellite viz
+│   │   ├── OSINTPanel.tsx              # OSINT display
+│   │   ├── OSINTIntelligencePage.tsx   # Intelligence page
+│   │   ├── PersonalizedDashboard.tsx   # User dashboard
+│   │   ├── CrisisTimelineView.tsx      # Timeline replay
+│   │   ├── Header.tsx                  # Top navigation
+│   │   ├── SignalFeed.tsx              # News feed
+│   │   ├── WorldMap.tsx                # MapLibre map
+│   │   ├── MarketTicker.tsx            # Market prices
+│   │   ├── PredictionPanel.tsx         # Prediction markets
+│   │   ├── TrackingPanel.tsx           # Flights/Ships/Quakes
+│   │   ├── TradingChart.tsx            # TradingView widget
+│   │   ├── MobileNav.tsx               # Mobile navigation
+│   │   └── StatsBar.tsx                # Footer stats
+│   ├── lib/
+│   │   ├── ai/
+│   │   │   ├── gemini.ts               # Groq AI service
+│   │   │   └── aiProvider.ts           # AI provider interface
+│   │   ├── osint/
+│   │   │   ├── aggregator.ts           # OSINT aggregation
+│   │   │   └── sources.ts              # Data sources
+│   │   ├── alerts/
+│   │   │   └── alertManager.ts         # Alert management
+│   │   ├── notifications/
+│   │   │   └── telegram.ts             # Telegram service
+│   │   ├── cors.ts                     # CORS utilities
+│   │   ├── classify.ts                 # Threat classification
+│   │   └── feeds.ts                    # Static data
+│   └── types/
+│       ├── index.ts                    # TypeScript types
+│       └── osint.ts                    # OSINT types
+├── public/
+│   ├── missile-viz/                    # Missile visualization data
+│   │   ├── data/                       # North Korea data
+│   │   ├── iran/                       # Iran data
+│   │   ├── india/                      # India data
+│   │   └── pakistan/                   # Pakistan data
+│   └── satellite-viz/                  # Satellite visualization
+│       └── index.html                  # Pure Canvas satellite viz
+├── package.json
+├── tailwind.config.ts
+├── next.config.mjs
+├── vercel.json
+└── README.md
+```
+
+---
 
 ## 🎨 Customization
 
 ### Adding News Sources
 
-Edit `src/app/api/signals/route.ts`:
+Edit `src/app/api/missile-news/route.ts`:
 
 ```typescript
-const FEEDS = [
-  { name: 'Your Source', url: 'https://example.com/rss', tier: 2 },
-  // ...
-];
+const countryQueries = {
+  'your-country': 'your query here',
+};
 ```
 
 ### Adding Map Layers
@@ -251,52 +358,7 @@ const THREAT_KEYWORDS = {
 };
 ```
 
-## 📁 Project Structure
-
-```
-xdc-world-feed/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx           # Main dashboard
-│   │   ├── layout.tsx         # Root layout
-│   │   ├── globals.css        # Global styles
-│   │   └── api/
-│   │       ├── signals/       # RSS aggregation
-│   │       ├── markets/       # Market data
-│   │       ├── predictions/   # Polymarket
-│   │       └── earthquakes/   # USGS data
-│   ├── components/
-│   │   ├── Header.tsx         # Top bar with threat level
-│   │   ├── SignalFeed.tsx     # News feed
-│   │   ├── WorldMap.tsx       # MapLibre map
-│   │   ├── MarketTicker.tsx   # Market prices
-│   │   ├── PredictionPanel.tsx # Prediction markets
-│   │   ├── TrackingPanel.tsx  # Flights/Ships/Quakes
-│   │   ├── TradingChart.tsx   # TradingView widget
-│   │   ├── MobileNav.tsx      # Mobile navigation
-│   │   └── StatsBar.tsx       # Footer stats
-│   ├── lib/
-│   │   ├── classify.ts        # Threat classification
-│   │   └── feeds.ts           # Static data
-│   └── types/
-│       └── index.ts           # TypeScript types
-├── public/                    # Static assets
-├── package.json
-├── tailwind.config.ts
-├── next.config.mjs
-└── README.md
-```
-
-## 🔧 Environment Variables
-
-No environment variables required for basic operation.
-
-Optional:
-```env
-# For enhanced features (not required)
-GROQ_API_KEY=xxx          # AI classification (optional)
-NASA_FIRMS_KEY=xxx        # Fire data (optional)
-```
+---
 
 ## 🤝 Contributing
 
@@ -306,24 +368,34 @@ NASA_FIRMS_KEY=xxx        # Fire data (optional)
 4. Push to branch (`git push origin feature/amazing`)
 5. Open a Pull Request
 
+---
+
 ## 📄 License
 
 MIT License — see [LICENSE](LICENSE) file.
 
+---
+
 ## 🙏 Credits
 
+- **Missile Data**: NTI (Nuclear Threat Initiative) Database
+- **Satellite Data**: Celestrak / NORAD
 - **News Sources**: Reuters, BBC, Al Jazeera, Guardian, France24, DW, Defense One, Breaking Defense
 - **Map**: MapLibre GL + Carto dark tiles
-- **Charts**: TradingView
+- **Charts**: TradingView + Custom Canvas
+- **AI**: Groq (llama-3.3-70b-versatile)
 - **Markets**: CoinGecko, Polymarket
 - **Earthquakes**: USGS
 - **Flight Tracking**: ADS-B Exchange
 - **Ship Tracking**: MarineTraffic
+- **Blockchain**: XDC Network
+
+---
 
 ## 🔗 Links
 
-- **Live Demo**: https://feed.xdc.network
-- **Repository**: https://github.com/your-username/xdc-world-feed
+- **Live Demo**: https://globe-news-live.vercel.app
+- **Repository**: https://github.com/your-username/globenews-live
 
 ---
 
