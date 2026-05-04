@@ -1,0 +1,35 @@
+{
+  "rewrites": [
+    {
+      "source": "/satellites",
+      "destination": "/satellites/index.html"
+    },
+    {
+      "source": "/alerts",
+      "destination": "/alerts/index.html"
+    },
+    {
+      "source": "/predictions",
+      "destination": "/predictions/index.html"
+    },
+    {
+      "source": "/intelligence",
+      "destination": "/intelligence/index.html"
+    },
+    {
+      "source": "/country/:code",
+      "destination": "/country/:code/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ]
+}
