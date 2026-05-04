@@ -178,12 +178,24 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const country = searchParams.get('country') || 'north-korea';
 
-    // Fetch test data
+    // Use relative path for Vercel
     const dataFile = country === 'north-korea' 
       ? '/missile-viz/data/test.en.json'
       : `/missile-viz/${country}/data/test.en.json`;
 
-    const response = await fetch(`http://localhost:3400${dataFile}`);
+    // Use absolute URL based on environment
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NODE_ENV === 'production'
+        ? 'https://globe-news-live.vercel.app'
+        : 'http://localhost:3400';
+
+    const response = await fetch(`${baseUrl}${dataFile}`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch data: ${response.status}`);
+    }
+    
     const rawData = await response.json();
     
     const tests = rawData.timeBins?.flatMap((bin: any) => 
