@@ -1,13 +1,36 @@
-import { OSINTSource, AggregatedEvent } from '@/types/osint';
+import { analyzeEvent, analyzeEventsBatch, SignalInput, AIAnalysisResult } from '@/lib/ai/gemini';
 
 /**
  * OSINT Feed Aggregator
  * Pulls CRITICAL+HIGH severity events from dashboard signals
- * Generates synthetic but realistic AI analysis
+ * Generates AI-powered intelligence analysis using Gemini 2.5 Flash
  * Blockchain verifies each event
  */
 
-export async function aggregateOsintFeed(): Promise<AggregatedEvent[]> {
+export interface OSINTSource {
+  id: string;
+  name: string;
+  data: string;
+  credibility: number;
+}
+
+export interface AggregatedEvent {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  credibility: number;
+  causality?: string;
+  prediction?: string;
+  ai_analysis?: string;
+  verified?: boolean;
+  txHash?: string;
+  sources?: string[];
+  timestamp?: string;
+}
+
+export async function aggregateOsintFeedSequential(): Promise<AggregatedEvent[]> {
   console.log('🚀 Aggregating OSINT from dashboard signals...');
 
   try {
@@ -32,15 +55,50 @@ export async function aggregateOsintFeed(): Promise<AggregatedEvent[]> {
     console.log(`📊 Found ${criticalSignals.length} CRITICAL/HIGH signals from dashboard`);
 
     if (criticalSignals.length === 0) {
-      console.log('⚠️  No critical signals found, using mock');
-      return formatEvents(getMockOSINTEvents());
+      console.log('⚠️  No critical signals found, using mock with AI analysis');
+      const mockEvents = getMockOSINTEvents();
+      
+      // Force AI analysis on mock data for testing
+      const mockInputs = mockEvents.map((event) => {
+        const parsed = JSON.parse(event.data);
+        return {
+          title: parsed.title,
+          description: parsed.description,
+          category: parsed.type || 'intelligence',
+          region: parsed.location || 'Global',
+          actors: extractActors(parsed),
+        };
+      });
+      
+      try {
+        console.log('🧠 Running AI analysis on mock events...');
+        const aiResults = await analyzeEventsBatch(mockInputs, 2);
+        
+        mockEvents.forEach((event, i) => {
+          const parsed = JSON.parse(event.data);
+          parsed.ai_analysis = aiResults[i];
+          event.data = JSON.stringify(parsed);
+        });
+        
+        console.log(`✅ Mock events enhanced with AI analysis`);
+      } catch (error) {
+        console.warn('⚠️  AI analysis failed for mock data, using embedded fallback');
+      }
+      
+      return formatEvents(mockEvents);
     }
 
-    // 3. Convert signals to OSINT events with synthetic AI analysis
-    const osintSources: OSINTSource[] = criticalSignals.map((signal: any) => {
-      const analysis = generateRealisticAnalysis(signal);
+    // 3. Process signals ONE BY ONE (sequential)
+    console.log(`🔄 Processing ${criticalSignals.length} signals sequentially...`);
+    
+    const processedSources: OSINTSource[] = [];
+    
+    for (let i = 0; i < criticalSignals.length; i++) {
+      const signal = criticalSignals[i];
+      console.log(`\n📰 [${i + 1}/${criticalSignals.length}] Processing: ${signal.title}`);
       
-      return {
+      // Create source object
+      const source: OSINTSource = {
         id: signal.id || `signal-${Math.random()}`,
         name: signal.title,
         data: JSON.stringify({
@@ -53,14 +111,43 @@ export async function aggregateOsintFeed(): Promise<AggregatedEvent[]> {
           credibility: 90 + Math.random() * 10,
           sources: [signal.source || 'Dashboard Intelligence Feed'],
           timestamp: signal.timestamp,
-          analysis,
         }),
         credibility: 92,
       };
-    });
+      
+      // Run AI analysis for this single signal
+      const signalInput = toSignalInput(signal);
+      try {
+        console.log(`🧠 Running AI analysis...`);
+        const aiResult = await analyzeEvent(signalInput);
+        
+        // Attach AI analysis to source data
+        const parsed = JSON.parse(source.data);
+        parsed.ai_analysis = aiResult;
+        source.data = JSON.stringify(parsed);
+        
+        console.log(`✅ AI analysis complete | Escalation: ${aiResult.escalation_probability}%`);
+      } catch (error) {
+        console.warn(`⚠️ AI analysis failed for this signal, using fallback`);
+        const fallback = {
+          root_cause: 'Analysis pending',
+          causal_chain: ['Event detected', 'Monitoring active'],
+          stakeholders: ['Regional powers'],
+          escalation_probability: 40,
+          timeline: '3-7 days',
+          market_impact: { oil: 'Monitoring', stocks: 'Monitoring', crypto: 'Monitoring', bonds: 'Monitoring' },
+        };
+        const parsed = JSON.parse(source.data);
+        parsed.ai_analysis = fallback;
+        source.data = JSON.stringify(parsed);
+      }
+      
+      processedSources.push(source);
+      console.log(`✅ Signal ${i + 1}/${criticalSignals.length} processed\n`);
+    }
 
-    console.log(`✅ Converted ${osintSources.length} real signals to OSINT events`);
-    return formatEvents(osintSources);
+    console.log(`✅ Converted ${processedSources.length} real signals to OSINT events with AI analysis`);
+    return formatEvents(processedSources);
 
   } catch (error) {
     console.error('❌ Error in aggregateOsintFeed:', error);
@@ -69,82 +156,55 @@ export async function aggregateOsintFeed(): Promise<AggregatedEvent[]> {
 }
 
 /**
- * Generate realistic AI analysis based on signal content
- * Pattern-matched to look like actual AI analysis
+ * Convert signal to AI analysis input format
  */
-function generateRealisticAnalysis(signal: any): any {
-  const title = (signal.title || '').toLowerCase();
-  const category = (signal.category || '').toLowerCase();
-
-  let rootCause = 'Regional geopolitical developments';
-  let causalChain: string[] = [];
-
-  // Pattern-based causality analysis
-  if (title.includes('military') || title.includes('strike') || title.includes('attack')) {
-    rootCause = 'Military escalation';
-    causalChain = ['Force deployment', 'Strategic positioning', 'Tactical execution'];
-  } else if (title.includes('sanction') || title.includes('economic')) {
-    rootCause = 'Economic pressure';
-    causalChain = ['Trade restrictions', 'Currency depreciation', 'Market volatility'];
-  } else if (title.includes('cyber')) {
-    rootCause = 'Cyber operations';
-    causalChain = ['Targeting', 'Penetration', 'Impact'];
-  } else if (title.includes('shipping') || title.includes('port') || title.includes('strait')) {
-    rootCause = 'Supply chain disruption';
-    causalChain = ['Blockade', 'Route restriction', 'Price adjustment'];
-  } else if (title.includes('oil') || title.includes('energy')) {
-    rootCause = 'Energy sector risk';
-    causalChain = ['Supply shortage', 'Price spike', 'Economic impact'];
-  }
-
-  // Prediction probability
-  let probability = signal.severity === 'CRITICAL' ? 75 : 55;
-  let timeframe = signal.severity === 'CRITICAL' ? '24-48 hours' : '3-7 days';
-
+function toSignalInput(signal: any): SignalInput {
   return {
-    causality: {
-      rootCause,
-      confidence: 82 + Math.random() * 15,
-      causalChain,
-      precedents: [
-        'Historical pattern observed',
-        'Similar tensions precedent',
-        'Regional escalation cycle',
-      ],
-      stakeholders: extractStakeholdersFromTitle(title),
-    },
-    prediction: {
-      escalationProbability: probability,
-      riskLevel: probability >= 70 ? 'EXTREME' : probability >= 50 ? 'HIGH' : 'MODERATE',
-      timeframe,
-      scenarios: [
-        'Contained resolution',
-        'Regional escalation',
-        'International involvement',
-      ],
-      marketImpact: {
-        oil: probability > 60 ? '+3-8%' : '±2-3%',
-        stocks: probability > 60 ? '-2-5%' : '±1-2%',
-        bonds: 'Flight to safety',
-        crypto: 'Volatility expected',
-      },
-    },
+    title: signal.title || signal.name || '',
+    description: signal.summary || signal.description || signal.title || '',
+    category: signal.category || signal.type || 'intelligence',
+    region: extractLocationFromSignal(signal),
+    actors: extractActors(signal),
   };
 }
 
-function extractStakeholdersFromTitle(title: string): string[] {
-  const stakeholders: string[] = [];
-  const actors: Record<string, string> = {
-    'iran': 'Iran', 'israel': 'Israel', 'usa': 'USA', 'russia': 'Russia',
-    'china': 'China', 'ukraine': 'Ukraine', 'saudi': 'Saudi Arabia',
-    'uae': 'UAE', 'qatar': 'Qatar', 'eu': 'EU', 'nato': 'NATO',
+/**
+ * Extract actors from signal data
+ */
+function extractActors(signal: any): string[] {
+  const text = ((signal.title || '') + ' ' + (signal.summary || '') + ' ' + (signal.description || '')).toLowerCase();
+  const actors: string[] = [];
+  const actorMap: Record<string, string> = {
+    'iran': 'Iran',
+    'israel': 'Israel',
+    'usa': 'United States',
+    'united states': 'United States',
+    'america': 'United States',
+    'russia': 'Russia',
+    'china': 'China',
+    'ukraine': 'Ukraine',
+    'saudi': 'Saudi Arabia',
+    'uae': 'UAE',
+    'qatar': 'Qatar',
+    'turkey': 'Turkey',
+    'pakistan': 'Pakistan',
+    'india': 'India',
+    'north korea': 'North Korea',
+    'nato': 'NATO',
+    'eu': 'European Union',
+    'un': 'United Nations',
+    'houthi': 'Houthi Rebels',
+    'hamas': 'Hamas',
+    'hezbollah': 'Hezbollah',
   };
 
-  for (const [keyword, actor] of Object.entries(actors)) {
-    if (title.includes(keyword)) stakeholders.push(actor);
+  for (const [keyword, actor] of Object.entries(actorMap)) {
+    if (text.includes(keyword) && !actors.includes(actor)) {
+      actors.push(actor);
+    }
   }
 
-  return stakeholders.length > 0 ? stakeholders : ['Regional powers', 'Global markets'];
+  return actors.length > 0 ? actors : [];
 }
 
 function extractLocationFromSignal(signal: any): string {
@@ -164,7 +224,7 @@ function extractLocationFromSignal(signal: any): string {
 }
 
 /**
- * Format sources into display events with blockchain verification
+ * Format sources into display events with blockchain verification and AI analysis
  */
 function formatEvents(sources: OSINTSource[]): AggregatedEvent[] {
   console.log(`📦 Formatting ${sources.length} events with blockchain verification...`);
@@ -184,6 +244,7 @@ function formatEvents(sources: OSINTSource[]): AggregatedEvent[] {
         credibility: Math.round(keyInfo.credibility || 90),
         causality: keyInfo.causality ? JSON.stringify(keyInfo.causality) : '{}',
         prediction: keyInfo.prediction ? JSON.stringify(keyInfo.prediction) : '{}',
+        ai_analysis: keyInfo.ai_analysis ? JSON.stringify(keyInfo.ai_analysis) : undefined,
         verified: true,
         txHash,
         sources: keyInfo.sources || [source.name],
@@ -225,6 +286,7 @@ function extractKeyInfo(source: OSINTSource): any {
         sources: parsed.sources,
         causality: parsed.analysis?.causality,
         prediction: parsed.analysis?.prediction,
+        ai_analysis: parsed.ai_analysis,
         timestamp: parsed.timestamp,
       };
     }
@@ -290,19 +352,31 @@ function getMockOSINTEvents(): OSINTSource[] {
         severity: 'CRITICAL',
         credibility: 95,
         sources: ['Reuters', 'Bloomberg'],
-        analysis: {
-          causality: {
-            rootCause: 'Regional power assertion',
-            confidence: 88,
-            causalChain: ['Naval deployment', 'Positioning', 'Deterrence signaling'],
-            stakeholders: ['Iran', 'USA', 'Saudi Arabia'],
-          },
-          prediction: {
-            escalationProbability: 75,
-            riskLevel: 'EXTREME',
-            timeframe: '24-48 hours',
+        ai_analysis: {
+          root_cause: 'Regional power assertion and deterrence signaling amid heightened tensions with Western powers',
+          causal_chain: [
+            'Iran deploys naval vessels to strategic positions near Hormuz',
+            'US Fifth Fleet increases patrol frequency in response',
+            'Gulf states elevate security alert levels',
+            'Global oil markets price in supply disruption risk',
+          ],
+          stakeholders: [
+            'Iran — seeking leverage in nuclear negotiations',
+            'United States — protecting freedom of navigation',
+            'Saudi Arabia — concerned about supply route security',
+            'China — major oil importer, watching supply stability',
+            'EU — monitoring for sanctions enforcement',
+          ],
+          escalation_probability: 72,
+          timeline: '24-48 hours',
+          market_impact: {
+            oil: '+8-15% (supply route risk premium)',
+            stocks: '-2-4% (energy sector volatility)',
+            crypto: '+5-10% (safe-haven flows)',
+            bonds: 'Flight to safety (US Treasuries rally)',
           },
         },
+        timestamp: new Date().toISOString(),
       }),
       credibility: 95,
     },
@@ -316,8 +390,47 @@ function getMockOSINTEvents(): OSINTSource[] {
         severity: 'HIGH',
         credibility: 88,
         sources: ['AFP', 'BBC World'],
+        ai_analysis: {
+          root_cause: 'Diplomatic breakdown following failed negotiations on key bilateral issues',
+          causal_chain: [
+            'Diplomatic talks collapse after final round',
+            'Both sides recall ambassadors and expel diplomats',
+            'Military readiness elevated to DEFCON 3 equivalent',
+            'International mediation efforts initiated by UN',
+          ],
+          stakeholders: [
+            'Primary disputant — domestic pressure for strong stance',
+            'Secondary disputant — seeking international sympathy',
+            'NATO — assessing Article 5 implications',
+            'UN Security Council — emergency session called',
+            'Regional neighbors — preparing contingency plans',
+          ],
+          escalation_probability: 58,
+          timeline: '3-7 days',
+          market_impact: {
+            oil: '+3-5% (geopolitical risk premium)',
+            stocks: '-1-3% (defense sector positive)',
+            crypto: '+2-5% (uncertainty hedge)',
+            bonds: 'Modest safe-haven flows',
+          },
+        },
+        timestamp: new Date().toISOString(),
       }),
       credibility: 88,
     },
   ];
 }
+
+
+/**
+ * Check for alerts on missile test data
+ */
+export async function checkMissileTestAlerts(testData: any[], country: string) {
+  try {
+    const { alertManager } = await import('@/lib/alerts/alertManager');
+    await alertManager.checkAlerts(testData, country);
+  } catch (error) {
+    console.error('? Error checking alerts:', error);
+  }
+}
+

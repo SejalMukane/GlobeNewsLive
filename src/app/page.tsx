@@ -38,6 +38,7 @@ import TVMode from '@/components/TVMode';
 import PersonalizedDashboard from '@/components/PersonalizedDashboard';
 import PreferencesModal from '@/components/PreferencesModal';
 import CrisisTimelineView from '@/components/CrisisTimelineView';
+import MultiCountryMissileDashboard from '@/components/MultiCountryMissileDashboard';
 import { Signal, MarketData, PredictionMarket, ThreatLevel } from '@/types';
 import { getThreatLevelFromSignals } from '@/lib/classify';
 import { ACTIVE_CONFLICTS } from '@/lib/feeds';
@@ -75,7 +76,7 @@ function playAlertSound() {
   }
 }
 
-type ViewMode = 'dashboard' | 'warroom' | 'personalized' | 'timeline';
+type ViewMode = 'dashboard' | 'warroom' | 'personalized' | 'timeline' | 'missiles';
 type MobileView = 'feed' | 'map' | 'markets' | 'tracking';
 
 export default function Dashboard() {
@@ -326,6 +327,12 @@ export default function Dashboard() {
             >
               ⚔️ WAR ROOM
             </button>
+            <button
+              onClick={() => setViewMode('missiles')}
+              className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white whitespace-nowrap"
+            >
+              🚀 MISSILES
+            </button>
           </div>
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
@@ -374,6 +381,12 @@ export default function Dashboard() {
               className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white hover:bg-white/5 whitespace-nowrap"
             >
               ⚔️ WAR ROOM
+            </button>
+            <button
+              onClick={() => setViewMode('missiles')}
+              className="px-3 py-1 rounded text-[10px] font-mono text-text-dim hover:text-white hover:bg-white/5 whitespace-nowrap"
+            >
+              🚀 MISSILES AND SATELLITES
             </button>
           </div>
           <div className="flex items-center gap-3">
@@ -433,6 +446,24 @@ export default function Dashboard() {
         <div className="hidden lg:block">
           <StatsBar activeConflicts={ACTIVE_CONFLICTS.length} militaryAlerts={militaryCount} highSeverity={highCount} criticalSeverity={criticalCount} timeFilter={timeFilter} onTimeFilterChange={setTimeFilter} />
         </div>
+      </div>
+    );
+  }
+
+  // Missile Dashboard View
+  if (viewMode === 'missiles') {
+    return (
+      <div className="h-full w-full bg-void overflow-auto">
+        <MultiCountryMissileDashboard />
+      </div>
+    );
+  }
+
+  // War Room View
+  if (viewMode === 'warroom') {
+    return (
+      <div className="h-screen flex flex-col bg-void overflow-hidden">
+        <WarRoom signals={signals} conflicts={conflicts} />
       </div>
     );
   }
@@ -498,6 +529,16 @@ export default function Dashboard() {
             }`}
           >
             ⚔️ WAR ROOM
+          </button>
+          <button
+            onClick={() => setViewMode('missiles')}
+            className={`px-3 py-1 rounded text-[10px] font-mono transition ${
+              currentViewMode === 'missiles'
+                ? 'bg-orange-500/20 text-orange-400'
+                : 'text-text-dim hover:text-white hover:bg-white/5'
+            }`}
+          >
+            🚀 MISSILES AND SATELLITES
           </button>
           <button
             onClick={() => setTvMode(true)}

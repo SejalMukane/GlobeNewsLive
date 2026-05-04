@@ -14,9 +14,151 @@ interface OSINTEvent {
   causality?: string;
   prediction?: string;
   marketImpact?: string;
+  ai_analysis?: string;
   verified?: boolean;
   txHash?: string;
   timestamp?: string;
+}
+
+// AI Analysis Display Component (Groq Mixtral)
+function AIAnalysisDisplay({ data }: { data: any }) {
+  try {
+    const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+    
+    if (!parsed || typeof parsed !== 'object') {
+      return (
+        <div className="bg-slate-900/50 rounded-lg p-4 text-slate-300 text-sm border-l-2 border-purple-500">
+          AI analysis data unavailable
+        </div>
+      );
+    }
+    
+    return (
+      <div className="space-y-4">
+        {/* Escalation Probability */}
+        {typeof parsed.escalation_probability === 'number' && (
+          <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/20 border border-purple-500/40 rounded-lg p-4">
+            <div className="flex items-end justify-between mb-3">
+              <div>
+                <p className="text-sm font-semibold text-purple-300">Escalation Probability</p>
+                <div className="text-3xl font-black text-purple-300 mt-1">
+                  {parsed.escalation_probability}%
+                </div>
+              </div>
+              <div className={`text-sm px-3 py-1.5 rounded-lg ${
+                parsed.escalation_probability >= 70 
+                  ? 'bg-red-500/30 text-red-300 border border-red-500/50'
+                  : parsed.escalation_probability >= 50
+                  ? 'bg-orange-500/30 text-orange-300 border border-orange-500/50'
+                  : 'bg-yellow-500/30 text-yellow-300 border border-yellow-500/50'
+              }`}>
+                {parsed.escalation_probability >= 70 ? '🔴 High' : parsed.escalation_probability >= 50 ? '🟠 Medium' : '🟡 Low'}
+              </div>
+            </div>
+            <div className="w-full bg-slate-700/50 rounded-full h-3 overflow-hidden">
+              <div 
+                className={`h-full rounded-full transition-all ${
+                  parsed.escalation_probability >= 70 ? 'bg-gradient-to-r from-red-600 to-red-400' :
+                  parsed.escalation_probability >= 50 ? 'bg-gradient-to-r from-orange-600 to-orange-400' :
+                  'bg-gradient-to-r from-yellow-600 to-yellow-400'
+                }`}
+                style={{ width: `${parsed.escalation_probability}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Root Cause */}
+        {parsed.root_cause && (
+          <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+            <p className="text-sm font-semibold text-blue-300 mb-2">Root Cause</p>
+            <p className="text-slate-200 text-sm leading-relaxed">{parsed.root_cause}</p>
+          </div>
+        )}
+
+        {/* Timeline */}
+        {parsed.timeline && (
+          <div className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4 flex items-center gap-3">
+            <Clock className="w-5 h-5 text-orange-400 flex-shrink-0" />
+            <div>
+              <p className="text-xs text-slate-400">Expected Timeline</p>
+              <p className="text-sm font-semibold text-orange-300">{parsed.timeline}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Causal Chain */}
+        {parsed.causal_chain && Array.isArray(parsed.causal_chain) && parsed.causal_chain.length > 0 && (
+          <div className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4">
+            <p className="text-sm font-semibold text-slate-300 mb-3">Causal Chain</p>
+            <div className="space-y-2">
+              {parsed.causal_chain.map((item: string, idx: number) => (
+                <div key={idx} className="flex items-start gap-3">
+                  <div className="flex flex-col items-center">
+                    <div className="w-6 h-6 rounded-full bg-blue-500/20 border border-blue-500/50 flex items-center justify-center text-xs text-blue-300 font-bold">
+                      {idx + 1}
+                    </div>
+                    {idx < parsed.causal_chain.length - 1 && (
+                      <div className="w-0.5 h-6 bg-slate-700/50 mt-1" />
+                    )}
+                  </div>
+                  <p className="text-sm text-slate-300 flex-1 pt-0.5">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Stakeholders */}
+        {parsed.stakeholders && Array.isArray(parsed.stakeholders) && parsed.stakeholders.length > 0 && (
+          <div className="bg-slate-800/30 border border-slate-700/50 rounded-lg p-4">
+            <p className="text-sm font-semibold text-slate-300 mb-3">Key Stakeholders</p>
+            <div className="flex flex-wrap gap-2">
+              {parsed.stakeholders.map((stakeholder: string, idx: number) => (
+                <span key={idx} className="px-3 py-1.5 bg-blue-900/30 border border-blue-500/30 rounded-lg text-xs text-blue-200 hover:bg-blue-900/50 transition-all">
+                  🎯 {stakeholder}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Market Impact */}
+        {parsed.market_impact && typeof parsed.market_impact === 'object' && (
+          <div className="bg-gradient-to-r from-green-900/20 to-emerald-900/10 border border-green-500/30 rounded-lg p-4">
+            <p className="text-sm font-semibold text-green-300 mb-3">💹 Market Impact Assessment</p>
+            <div className="grid grid-cols-2 gap-3">
+              {Object.entries(parsed.market_impact).map(([sector, impact]: any, idx: number) => {
+                const impactStr = String(impact).toLowerCase();
+                const isPositive = impactStr.includes('+') || impactStr.includes('rally') || impactStr.includes('surge');
+                const isNegative = impactStr.includes('-') || impactStr.includes('drop') || impactStr.includes('fall');
+                const colorClass = isPositive ? 'text-green-400' : isNegative ? 'text-red-400' : 'text-yellow-400';
+                const bgClass = isPositive ? 'bg-green-900/20' : isNegative ? 'bg-red-900/20' : 'bg-yellow-900/20';
+                
+                return (
+                  <div key={idx} className={`${bgClass} rounded-lg p-3 border border-slate-700/50`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-400 uppercase tracking-wider">{sector}</span>
+                      <span className="text-lg">
+                        {sector === 'oil' ? '🛢️' : sector === 'stocks' ? '📈' : sector === 'crypto' ? '₿' : '📊'}
+                      </span>
+                    </div>
+                    <p className={`text-sm font-semibold mt-1 ${colorClass}`}>{impact}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  } catch (e) {
+    return (
+      <div className="bg-slate-900/50 rounded-lg p-4 text-slate-300 text-sm border-l-2 border-purple-500">
+        {typeof data === 'string' ? data : JSON.stringify(data, null, 2)}
+      </div>
+    );
+  }
 }
 
 // Causality Display Component
@@ -276,7 +418,6 @@ export default function OSINTIntelligencePage() {
   const [sortBy, setSortBy] = useState<string>('severity');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [autoRefresh, setAutoRefresh] = useState(true);
   const [copiedHash, setCopiedHash] = useState<string | null>(null);
 
   const severityColors: Record<string, { bg: string; border: string; badge: string; icon: string }> = {
@@ -314,11 +455,7 @@ export default function OSINTIntelligencePage() {
 
   useEffect(() => {
     fetchOSINTFeed();
-    if (autoRefresh) {
-      const interval = setInterval(fetchOSINTFeed, 5 * 60 * 1000);
-      return () => clearInterval(interval);
-    }
-  }, [autoRefresh]);
+  }, []);
 
   const filteredEvents = events
     .filter(e => severityFilter === 'All' || e.severity === severityFilter)
@@ -368,7 +505,7 @@ export default function OSINTIntelligencePage() {
                 <h1 className="text-4xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   OSINT Intelligence
                 </h1>
-                <p className="text-slate-400 text-sm mt-1">Real-time Global Intelligence with AI Analysis</p>
+                <p className="text-slate-400 text-sm mt-1">Real-time Global Intelligence with <span className="text-purple-400 font-semibold">Groq Mixtral</span> AI Analysis</p>
               </div>
             </div>
             <div className="flex items-center gap-3 bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-700">
@@ -449,16 +586,6 @@ export default function OSINTIntelligencePage() {
                 <option value="severity">By Severity</option>
                 <option value="credibility">By Credibility</option>
               </select>
-              <button
-                onClick={() => setAutoRefresh(!autoRefresh)}
-                className={`px-4 py-3 rounded-lg backdrop-blur border transition-all ${
-                  autoRefresh
-                    ? 'bg-green-500/20 border-green-500/50 text-green-400'
-                    : 'bg-slate-800/50 border-slate-700/50 text-slate-400'
-                }`}
-              >
-                {autoRefresh ? '⏱️' : '⏸️'}
-              </button>
               <button
                 onClick={fetchOSINTFeed}
                 disabled={loading}
@@ -559,8 +686,23 @@ export default function OSINTIntelligencePage() {
                 {/* Expanded Content */}
                 {expandedId === event.id && (
                   <div className="mt-6 pt-6 border-t border-slate-700/50 space-y-6 animate-in fade-in">
+                    {/* AI Analysis (Gemini 2.5 Flash) */}
+                    {event.ai_analysis && (
+                      <div>
+                        <div className="flex items-center gap-3 mb-3">
+                          <h4 className="text-lg font-bold text-purple-300 flex items-center gap-2">
+                            <span>🧠</span> AI Intelligence Analysis
+                          </h4>
+                          <span className="px-2 py-1 bg-purple-500/20 rounded text-xs text-purple-300 border border-purple-500/30">
+                            Groq Mixtral
+                          </span>
+                        </div>
+                        <AIAnalysisDisplay data={event.ai_analysis} />
+                      </div>
+                    )}
+
                     {/* Causality */}
-                    {event.causality && (
+                    {event.causality && !event.ai_analysis && (
                       <div>
                         <h4 className="text-lg font-bold text-blue-300 mb-3 flex items-center gap-2">
                           <span>🧠</span> Root Cause Analysis
@@ -570,7 +712,7 @@ export default function OSINTIntelligencePage() {
                     )}
 
                     {/* Prediction */}
-                    {event.prediction && (
+                    {event.prediction && !event.ai_analysis && (
                       <div>
                         <h4 className="text-lg font-bold text-purple-300 mb-3 flex items-center gap-2">
                           <span>🔮</span> Escalation Forecast

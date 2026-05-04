@@ -11,7 +11,7 @@
 import crypto from 'crypto';
 
 interface AIResponse {
-  provider: 'groq' | 'google' | 'openrouter' | 'cached';
+  provider: 'google' | 'groq' | 'openrouter' | 'cached' | 'mock';
   content: string;
   cost: number;
   cached?: boolean;
@@ -184,7 +184,7 @@ Return JSON with:
     cacheResult(osintData, taskType, content, 'google-ai');
 
     return {
-      provider: 'google-ai',
+      provider: 'google',
       content,
       cost: 0,
       timestamp: Date.now(),

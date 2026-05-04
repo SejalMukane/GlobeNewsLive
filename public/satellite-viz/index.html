@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satellite Orbits</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        #container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        #globeCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+            color: white;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #333;
+            border-top: 4px solid #4a9eff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .satellite-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            min-width: 200px;
+        }
+        
+        .country-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading Satellite Orbits...</p>
+        </div>
+        
+        <canvas id="globeCanvas"></canvas>
+        
+        <div class="controls">
+            <h3>Controls</h3>
+            <p>🖱️ Drag to Rotate</p>
+            <p>📜 Scroll to Zoom</p>
+        </div>
+        
+        <div class="satellite-info">
+            <h3 id="countryName">Country</h3>
+            <div id="satelliteCount">0</div>
+            <p>Active Satellites</p>
+            <div class="country-badge" id="countryBadge">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        // Get country from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const country = urlParams.get('country') || 'north-korea';
+        
+        // Country configurations
+        const countryConfig = {
+            'north-korea': {
+                name: 'North Korea',
+                color: '#ef4444',
+                satellites: [
+                    { name: 'Kwangmyongsong-1', inclination: 40.5, altitude: 500, speed: 0.0005 },
+                    { name: 'Kwangmyongsong-2', inclination: 97.4, altitude: 500, speed: 0.0005 },
+                    { name: 'Kwangmyongsong-3', inclination: 97.4, altitude: 500, speed: 0.0005 },
+                    { name: 'Kwangmyongsong-4', inclination: 97.4, altitude: 500, speed: 0.0005 }
+                ],
+                launchSite: { lat: 39.66, lon: 124.71, name: 'Sohae Satellite Launching Station' }
+            },
+            'iran': {
+                name: 'Iran',
+                color: '#f97316',
+                satellites: [
+                    { name: 'Omid', inclination: 55, altitude: 250, speed: 0.001 },
+                    { name: 'Rasad-1', inclination: 55, altitude: 260, speed: 0.001 },
+                    { name: 'Navid', inclination: 55, altitude: 250, speed: 0.001 },
+                    { name: 'Fajr', inclination: 55, altitude: 250, speed: 0.001 },
+                    { name: 'Noor-1', inclination: 55, altitude: 450, speed: 0.0008 },
+                    { name: 'Noor-2', inclination: 55, altitude: 500, speed: 0.0008 },
+                    { name: 'Noor-3', inclination: 55, altitude: 450, speed: 0.0008 }
+                ],
+                launchSite: { lat: 35.23, lon: 53.92, name: 'Imam Khomeini Spaceport' }
+            },
+            'india': {
+                name: 'India',
+                color: '#3b82f6',
+                satellites: [
+                    { name: 'Aryabhata', inclination: 50.7, altitude: 600, speed: 0.0005 },
+                    { name: 'Bhaskara-1', inclination: 50.7, altitude: 500, speed: 0.0005 },
+                    { name: 'Rohini-1', inclination: 46, altitude: 900, speed: 0.0004 },
+                    { name: 'IRS-1A', inclination: 99, altitude: 900, speed: 0.0004 },
+                    { name: 'Chandrayaan-1', inclination: 90, altitude: 100000, speed: 0.00005 },
+                    { name: 'Mangalyaan', inclination: 90, altitude: 200000, speed: 0.00003 },
+                    { name: 'Cartosat-2', inclination: 97.8, altitude: 630, speed: 0.0005 },
+                    { name: 'RISAT-1', inclination: 97.8, altitude: 536, speed: 0.0005 },
+                    { name: 'GSAT-1', inclination: 48, altitude: 35786, speed: 0.0001 },
+                    { name: 'INSAT-1A', inclination: 48, altitude: 35786, speed: 0.0001 }
+                ],
+                launchSite: { lat: 13.73, lon: 80.23, name: 'Satish Dhawan Space Centre' }
+            },
+            'pakistan': {
+                name: 'Pakistan',
+                color: '#22c55e',
+                satellites: [
+                    { name: 'Badr-1', inclination: 56, altitude: 900, speed: 0.0004 },
+                    { name: 'Badr-B', inclination: 56, altitude: 1000, speed: 0.0004 },
+                    { name: 'PakTES-1A', inclination: 56, altitude: 610, speed: 0.0005 },
+                    { name: 'PRSS-1', inclination: 97.5, altitude: 640, speed: 0.0005 },
+                    { name: 'PakSat-1R', inclination: 38, altitude: 35786, speed: 0.0001 },
+                    { name: 'PakSat-MM1', inclination: 38, altitude: 35786, speed: 0.0001 }
+                ],
+                launchSite: { lat: 25.29, lon: 61.94, name: 'Sonmiani Satellite Launch Center' }
+            }
+        };
+
+        const config = countryConfig[country] || countryConfig['north-korea'];
+        
+        // Update UI
+        document.getElementById('countryName').textContent = config.name;
+        document.getElementById('satelliteCount').textContent = config.satellites.length;
+        document.getElementById('countryBadge').textContent = config.name;
+        document.getElementById('countryBadge').style.background = config.color;
+        document.getElementById('countryBadge').style.color = 'white';
+        
+        // Canvas setup
+        const canvas = document.getElementById('globeCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Globe parameters
+        let globeRadius = Math.min(canvas.width, canvas.height) * 0.35;
+        let centerX = canvas.width / 2;
+        let centerY = canvas.height / 2;
+        
+        // Camera/rotation state
+        let rotation = { x: 0.3, y: 0 };
+        let targetRotation = { x: 0.3, y: 0 };
+        let zoom = 1;
+        let isDragging = false;
+        let lastMouse = { x: 0, y: 0 };
+        
+        // Mouse controls
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMouse = { x: e.clientX, y: e.clientY };
+        });
+        
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - lastMouse.x;
+                const deltaY = e.clientY - lastMouse.y;
+                targetRotation.y += deltaX * 0.01;
+                targetRotation.x += deltaY * 0.01;
+                targetRotation.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, targetRotation.x));
+                lastMouse = { x: e.clientX, y: e.clientY };
+            }
+        });
+        
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+        
+        canvas.addEventListener('wheel', (e) => {
+            zoom += e.deltaY * -0.001;
+            zoom = Math.max(0.5, Math.min(3, zoom));
+        });
+        
+        // 3D point rotation
+        function rotatePoint(x, y, z, rotX, rotY) {
+            let cosY = Math.cos(rotY);
+            let sinY = Math.sin(rotY);
+            let x1 = x * cosY - z * sinY;
+            let z1 = x * sinY + z * cosY;
+            
+            let cosX = Math.cos(rotX);
+            let sinX = Math.sin(rotX);
+            let y1 = y * cosX - z1 * sinX;
+            let z2 = y * sinX + z1 * cosX;
+            
+            return { x: x1, y: y1, z: z2 };
+        }
+        
+        // Project 3D point to 2D
+        function project(x, y, z) {
+            const distance = 1000;
+            const scale = distance / (distance + z);
+            return {
+                x: centerX + x * scale * zoom,
+                y: centerY + y * scale * zoom,
+                scale: scale,
+                visible: z > -distance
+            };
+        }
+        
+        // Draw Earth
+        function drawEarth() {
+            globeRadius = Math.min(canvas.width, canvas.height) * 0.35;
+            centerX = canvas.width / 2;
+            centerY = canvas.height / 2;
+            
+            // Draw globe sphere with realistic ocean color
+            const gradient = ctx.createRadialGradient(
+                centerX - globeRadius * 0.3, centerY - globeRadius * 0.3, 0,
+                centerX, centerY, globeRadius
+            );
+            gradient.addColorStop(0, '#1a5f8a');
+            gradient.addColorStop(0.5, '#0d3d5c');
+            gradient.addColorStop(0.8, '#092538');
+            gradient.addColorStop(1, '#051a2e');
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, globeRadius, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // Draw atmosphere glow
+            const glowGradient = ctx.createRadialGradient(
+                centerX, centerY, globeRadius,
+                centerX, centerY, globeRadius * 1.3
+            );
+            glowGradient.addColorStop(0, 'rgba(74, 158, 255, 0.2)');
+            glowGradient.addColorStop(0.5, 'rgba(74, 158, 255, 0.1)');
+            glowGradient.addColorStop(1, 'rgba(74, 158, 255, 0)');
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, globeRadius * 1.3, 0, Math.PI * 2);
+            ctx.fillStyle = glowGradient;
+            ctx.fill();
+            
+            // Draw grid lines
+            ctx.strokeStyle = 'rgba(74, 158, 255, 0.12)';
+            ctx.lineWidth = 1;
+            
+            // Latitude lines
+            for (let lat = -80; lat <= 80; lat += 20) {
+                ctx.beginPath();
+                for (let lon = 0; lon <= 360; lon += 5) {
+                    const rad = Math.PI / 180;
+                    const x = Math.cos(lat * rad) * Math.cos(lon * rad) * globeRadius;
+                    const y = Math.sin(lat * rad) * globeRadius;
+                    const z = Math.cos(lat * rad) * Math.sin(lon * rad) * globeRadius;
+                    
+                    const rotated = rotatePoint(x, y, z, rotation.x, rotation.y);
+                    const projected = project(rotated.x, rotated.y, rotated.z);
+                    
+                    if (projected.visible) {
+                        if (lon === 0) {
+                            ctx.moveTo(projected.x, projected.y);
+                        } else {
+                            ctx.lineTo(projected.x, projected.y);
+                        }
+                    }
+                }
+                ctx.stroke();
+            }
+            
+            // Longitude lines
+            for (let lon = 0; lon < 360; lon += 30) {
+                ctx.beginPath();
+                for (let lat = -90; lat <= 90; lat += 5) {
+                    const rad = Math.PI / 180;
+                    const x = Math.cos(lat * rad) * Math.cos(lon * rad) * globeRadius;
+                    const y = Math.sin(lat * rad) * globeRadius;
+                    const z = Math.cos(lat * rad) * Math.sin(lon * rad) * globeRadius;
+                    
+                    const rotated = rotatePoint(x, y, z, rotation.x, rotation.y);
+                    const projected = project(rotated.x, rotated.y, rotated.z);
+                    
+                    if (projected.visible) {
+                        if (lat === -90) {
+                            ctx.moveTo(projected.x, projected.y);
+                        } else {
+                            ctx.lineTo(projected.x, projected.y);
+                        }
+                    }
+                }
+                ctx.stroke();
+            }
+        }
+        
+        // Draw satellite orbit
+        function drawOrbit(satellite, index) {
+            const orbitRadius = globeRadius + (satellite.altitude / 1000) * 10;
+            
+            // Generate orbit points for a complete circle
+            const points = [];
+            const inclination = satellite.inclination * Math.PI / 180;
+            
+            for (let i = 0; i <= 360; i += 2) {
+                const angle = (i * Math.PI / 180);
+                
+                // Proper circular orbit
+                const x = Math.cos(angle) * orbitRadius;
+                const y = Math.sin(angle) * Math.sin(inclination) * orbitRadius * 0.3;
+                const z = Math.sin(angle) * Math.cos(inclination) * orbitRadius;
+                
+                const rotated = rotatePoint(x, y, z, rotation.x, rotation.y);
+                const projected = project(rotated.x, rotated.y, rotated.z);
+                
+                if (projected.visible) {
+                    points.push(projected);
+                }
+            }
+            
+            // Draw orbit path
+            if (points.length > 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = config.color + '40'; // 25% opacity
+                ctx.lineWidth = 1.5;
+                
+                for (let i = 0; i < points.length; i++) {
+                    if (i === 0) {
+                        ctx.moveTo(points[i].x, points[i].y);
+                    } else {
+                        ctx.lineTo(points[i].x, points[i].y);
+                    }
+                }
+                ctx.stroke();
+            }
+            
+            // Calculate satellite position (very slow movement based on real orbital period)
+            const time = Date.now() * 0.001; // Convert to seconds
+            const orbitalPeriod = satellite.meanMotion ? (24 * 60 * 60) / satellite.meanMotion : 5400; // seconds
+            const satAngle = (time / orbitalPeriod) * Math.PI * 2 + (index * 1.5);
+            const satInclination = satellite.inclination * Math.PI / 180;
+            
+            const sx = Math.cos(satAngle) * orbitRadius;
+            const sy = Math.sin(satAngle) * Math.sin(satInclination) * orbitRadius * 0.3;
+            const sz = Math.sin(satAngle) * Math.cos(satInclination) * orbitRadius;
+            
+            const satRotated = rotatePoint(sx, sy, sz, rotation.x, rotation.y);
+            const satProjected = project(satRotated.x, satRotated.y, satRotated.z);
+            
+            if (satProjected.visible) {
+                const glowSize = 15 * satProjected.scale;
+                
+                // Satellite glow
+                const glowGradient = ctx.createRadialGradient(
+                    satProjected.x, satProjected.y, 0,
+                    satProjected.x, satProjected.y, glowSize
+                );
+                glowGradient.addColorStop(0, config.color + 'FF');
+                glowGradient.addColorStop(0.3, config.color + '80');
+                glowGradient.addColorStop(1, config.color + '00');
+                
+                ctx.beginPath();
+                ctx.arc(satProjected.x, satProjected.y, glowSize, 0, Math.PI * 2);
+                ctx.fillStyle = glowGradient;
+                ctx.fill();
+                
+                // Satellite core
+                ctx.beginPath();
+                ctx.arc(satProjected.x, satProjected.y, 4 * satProjected.scale, 0, Math.PI * 2);
+                ctx.fillStyle = config.color;
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(satProjected.x, satProjected.y, 4 * satProjected.scale, 0, Math.PI * 2);
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                
+                // Satellite label
+                const labelY = satProjected.y - 15 * satProjected.scale;
+                ctx.font = `bold ${11 * satProjected.scale}px Arial`;
+                ctx.fillStyle = config.color;
+                ctx.textAlign = 'center';
+                ctx.fillText(satellite.name, satProjected.x, labelY);
+            }
+            
+            return satProjected;
+        }
+        
+        // Draw launch site
+        function drawLaunchSite() {
+            if (!config.launchSite) return;
+            
+            const lat = config.launchSite.lat * Math.PI / 180;
+            const lon = config.launchSite.lon * Math.PI / 180;
+            
+            const x = Math.cos(lat) * Math.cos(lon) * globeRadius;
+            const y = Math.sin(lat) * globeRadius;
+            const z = Math.cos(lat) * Math.sin(lon) * globeRadius;
+            
+            const rotated = rotatePoint(x, y, z, rotation.x, rotation.y);
+            const projected = project(rotated.x, rotated.y, rotated.z);
+            
+            if (projected.visible && projected.scale > 0.3) {
+                // Launch site marker
+                ctx.beginPath();
+                ctx.arc(projected.x, projected.y, 8 * projected.scale, 0, Math.PI * 2);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(projected.x, projected.y, 8 * projected.scale, 0, Math.PI * 2);
+                ctx.strokeStyle = config.color;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Label
+                ctx.font = `bold ${13 * projected.scale}px Arial`;
+                ctx.fillStyle = 'white';
+                ctx.textAlign = 'center';
+                ctx.fillText(config.launchSite.name, projected.x, projected.y - 18 * projected.scale);
+                
+                // Launch site label
+                ctx.font = `${10 * projected.scale}px Arial`;
+                ctx.fillStyle = '#aaa';
+                ctx.fillText('🚀 Launch Site', projected.x, projected.y + 20 * projected.scale);
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            // Smooth rotation interpolation
+            rotation.x += (targetRotation.x - rotation.x) * 0.05;
+            rotation.y += (targetRotation.y - rotation.y) * 0.05;
+            
+            // Auto-rotate very slowly
+            targetRotation.y += 0.0005;
+            
+            // Clear canvas
+            ctx.fillStyle = '#000510';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw stars
+            ctx.fillStyle = 'white';
+            for (let i = 0; i < 300; i++) {
+                const x = (Math.sin(i * 123.456) * 0.5 + 0.5) * canvas.width;
+                const y = (Math.cos(i * 789.012) * 0.5 + 0.5) * canvas.height;
+                const size = Math.sin(i * 3.14159) * 1 + 0.5;
+                const opacity = Math.sin(Date.now() * 0.001 + i) * 0.5 + 0.5;
+                
+                ctx.globalAlpha = opacity * 0.6;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+            
+            // Draw Earth
+            drawEarth();
+            
+            // Draw satellites
+            config.satellites.forEach((sat, index) => {
+                drawOrbit(sat, index);
+            });
+            
+            // Draw launch site
+            drawLaunchSite();
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Hide loading and start
+        document.getElementById('loading').style.display = 'none';
+        animate();
+    </script>
+</body>
+</html>
