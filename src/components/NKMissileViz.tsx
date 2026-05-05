@@ -12,17 +12,9 @@ export default function NKMissileViz({ country = 'north-korea' }: NKMissileVizPr
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Map country to visualization path
-    const countryPaths: Record<string, string> = {
-      'north-korea': '/missile-viz/index.html',
-      'iran': '/missile-viz/iran/index.html',
-      'india': '/missile-viz/india/index.html',
-      'pakistan': '/missile-viz/pakistan/index.html'
-    };
-
-    // Create iframe pointing to country-specific visualization
+    // Create iframe pointing to API route
     const iframe = document.createElement('iframe');
-    iframe.src = countryPaths[country] + '?country=' + country;
+    iframe.src = '/api/missile-viz';
     iframe.style.width = '100%';
     iframe.style.height = '100%';
     iframe.style.border = 'none';
