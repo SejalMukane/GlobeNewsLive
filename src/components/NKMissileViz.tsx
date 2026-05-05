@@ -15,27 +15,27 @@ export default function NKMissileViz({ country = 'north-korea' }: NKMissileVizPr
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Create iframe pointing to API route
+    // Map country to visualization path
+    const countryPaths: Record<string, string> = {
+      'north-korea': '/missile-viz/index.html',
+      'iran': '/missile-viz/iran/index.html',
+      'india': '/missile-viz/india/index.html',
+      'pakistan': '/missile-viz/pakistan/index.html'
+    };
+
+    // Create iframe pointing to country-specific visualization
     const iframe = document.createElement('iframe');
-    iframe.src = '/api/missile-viz';
+    iframe.src = countryPaths[country];
     iframe.style.width = '100%';
     iframe.style.height = '100%';
     iframe.style.border = 'none';
     iframe.style.margin = '0';
     iframe.style.padding = '0';
 
-    // Set a timeout to detect if the visualization fails to load
-    const loadTimeout = setTimeout(() => {
-      setLoadFailed(true);
-    }, 10000); // 10 second timeout
-
-    iframe.onload = () => {
-      clearTimeout(loadTimeout);
-      setLoadFailed(false);
-    };
-
+    // Note: We don't set a timeout because WebGL visualization takes variable time to load
+    // and may not trigger onload event until rendering completes
+    
     iframe.onerror = () => {
-      clearTimeout(loadTimeout);
       setLoadFailed(true);
     };
 
@@ -43,7 +43,6 @@ export default function NKMissileViz({ country = 'north-korea' }: NKMissileVizPr
 
     // Cleanup
     return () => {
-      clearTimeout(loadTimeout);
       if (containerRef.current && iframe.parentNode === containerRef.current) {
         containerRef.current.removeChild(iframe);
       }
