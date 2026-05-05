@@ -209,7 +209,7 @@ export default function MultiCountryMissileDashboard() {
       const typeMap: Record<string, { count: number; type: string }> = {};
       testData.forEach((test: any) => {
         const missileName = test.missile || 'Unknown';
-        const missileType = test.type || 'Unknown';
+        const missileType = rangeMap[missileName]?.type || 'Unknown';
         if (!typeMap[missileName]) {
           typeMap[missileName] = { count: 0, type: missileType };
         }
@@ -289,12 +289,13 @@ export default function MultiCountryMissileDashboard() {
       };
 
       const missileRangeData = Object.entries(rangeMap)
-        .filter(([name]) => typeMap[name])
         .map(([name, data]) => ({
           name: name.toUpperCase(),
           range: data.range,
-          type: data.type
+          type: data.type,
+          count: typeMap[name]?.count || 0
         }))
+        .filter(item => item.count > 0)  // Only show missiles that actually have tests
         .sort((a, b) => b.range - a.range)
         .slice(0, 15);
 
