@@ -1,0 +1,104 @@
+{
+  "facilities": {
+    "qom-launch-site": {
+      "name": "Qom Launch Site",
+      "lat": 34.517183,
+      "lon": 51.263201
+    },
+    "kermanshah-region": {
+      "name": "Kermanshah Region",
+      "lat": 34.482781,
+      "lon": 47.01024
+    },
+    "unknown": {
+      "name": "Unknown",
+      "lat": 32.4279,
+      "lon": 53.6880
+    },
+    "mashhad-air-base": {
+      "name": "Mashhad Air Base",
+      "lat": 36.234306,
+      "lon": 59.640333
+    },
+    "semnan-launch-site": {
+      "name": "Semnan Launch Site",
+      "lat": 35.2347,
+      "lon": 53.921
+    },
+    "persian-gulf-strait-of-hormuz-region": {
+      "name": "Persian Gulf, Strait of Hormuz region",
+      "lat": 26.5,
+      "lon": 56.0
+    },
+    "persian-gulf-region": {
+      "name": "Persian Gulf Region",
+      "lat": 27.0,
+      "lon": 51.0
+    },
+    "kerman-region": {
+      "name": "Kerman Region",
+      "lat": 30.29,
+      "lon": 57.06
+    },
+    "irgc-navy-jask-military-base": {
+      "name": "IRGC Navy Jask Military Base",
+      "lat": 25.676405,
+      "lon": 57.83808
+    },
+    "chabahar-region": {
+      "name": "Chabahar Region",
+      "lat": 25.3,
+      "lon": 60.6
+    },
+    "azarshahr-launch-site": {
+      "name": "Azarshahr Launch Site",
+      "lat": 37.902322,
+      "lon": 45.918376
+    },
+    "garmsar-launch-site": {
+      "name": "Garmsar Launch Site",
+      "lat": 35.02577,
+      "lon": 52.47259
+    },
+    "jalnabad-launch-site": {
+      "name": "Jalnabad Launch Site",
+      "lat": 35.8,
+      "lon": 51.5
+    },
+    "kuh-gitchen-launch-site": {
+      "name": "Kuh Gitchen Launch Site",
+      "lat": 35.6,
+      "lon": 52.0
+    },
+    "shahroud-launch-site": {
+      "name": "Shahroud Launch Site",
+      "lat": 36.20097,
+      "lon": 55.3338
+    },
+    "chabahar": {
+      "name": "Chabahar",
+      "lat": 25.55901,
+      "lon": 60.737393
+    },
+    "shadad-desert-camp": {
+      "name": "Shadad Desert Camp",
+      "lat": 30.579004,
+      "lon": 57.852772
+    },
+    "east-azerbaijan-region": {
+      "name": "East Azerbaijan Region",
+      "lat": 37.9,
+      "lon": 46.0
+    },
+    "khuzestan-region": {
+      "name": "Khuzestan Region",
+      "lat": 31.3,
+      "lon": 48.6
+    },
+    "gulf-of-oman": {
+      "name": "Gulf of Oman",
+      "lat": 25.0,
+      "lon": 58.0
+    }
+  }
+}

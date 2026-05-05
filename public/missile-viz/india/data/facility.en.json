@@ -1,0 +1,44 @@
+{
+  "facilities": {
+    "satish-dhawan-space-centre": {
+      "name": "Satish Dhawan Space Centre",
+      "lat": 13.7331,
+      "lon": 80.2358
+    },
+    "integrated-test-range": {
+      "name": "Integrated Test Range",
+      "lat": 20.7557,
+      "lon": 87.0885
+    },
+    "pokhran-test-range": {
+      "name": "Pokhran Test Range",
+      "lat": 27.0875,
+      "lon": 71.7525
+    },
+    "visakhapatnam": {
+      "name": "Visakhapatnam",
+      "lat": 17.6868,
+      "lon": 83.2185
+    },
+    "andaman-archipelago": {
+      "name": "Andaman Archipelago",
+      "lat": 11.6234,
+      "lon": 92.7265
+    },
+    "car-nicobar-island": {
+      "name": "Car Nicobar Island",
+      "lat": 9.1833,
+      "lon": 92.8167
+    },
+    "unknown": {
+      "name": "Unknown",
+      "lat": 20.5937,
+      "lon": 78.9629
+    },
+    "unknown-4": {
+      "name": "Unknown",
+      "lat": 20.5937,
+      "lon": 78.9629
+    }
+  }
+}

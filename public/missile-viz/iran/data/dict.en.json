@@ -1,0 +1,22 @@
+{
+  "_title": "Iran Missile Test Visualization",
+  "_subtitle": "An interactive visualization of missile tests by Iran",
+  "_abouttitle": "About Iran Missile Tests",
+  "_about": "This visualization shows missile tests conducted by Iran.",
+  "about": "About",
+  "search": "Search",
+  "date": "Date",
+  "missile-name": "Missile Name",
+  "missile-type": "Missile Type",
+  "facility-name": "Facility Name",
+  "landing-location": "Landing Location",
+  "apogee": "Apogee",
+  "distance-travelled": "Distance Travelled",
+  "description": "Description",
+  "status": "Status",
+  "success": "Success",
+  "failure": "Failure",
+  "unknown": "Unknown",
+  "test-outcome": "Test Outcome",
+  "select-all": "Select All"
+}

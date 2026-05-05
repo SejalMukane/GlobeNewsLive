@@ -1,0 +1,249 @@
+{
+  "facilities": {
+    "tonghae": {
+      "name": "Tonghae",
+      "lat": 40.85,
+      "lon": 129.65
+    },
+    "sinpo": {
+      "name": "Sinpo",
+      "lat": 40.15,
+      "lon": 128.35
+    },
+    "hwadae-ri": {
+      "name": "Hwadae-ri",
+      "lat": 40.85,
+      "lon": 129.65
+    },
+    "kitaeryong": {
+      "name": "Kitaeryong",
+      "lat": 39.45,
+      "lon": 127.35
+    },
+    "pyongyang": {
+      "name": "Pyongyang",
+      "lat": 39.03,
+      "lon": 125.76
+    },
+    "sohae": {
+      "name": "Sohae",
+      "lat": 39.65,
+      "lon": 124.7
+    },
+    "musudan-ri": {
+      "name": "Musudan-ri",
+      "lat": 40.85,
+      "lon": 129.65
+    },
+    "wonsan": {
+      "name": "Wonsan",
+      "lat": 39.15,
+      "lon": 127.45
+    },
+    "kaesong": {
+      "name": "Kaesong",
+      "lat": 37.97,
+      "lon": 126.55
+    },
+    "hamhung": {
+      "name": "Hamhung",
+      "lat": 39.93,
+      "lon": 127.55
+    },
+    "nampo": {
+      "name": "Nampo",
+      "lat": 38.75,
+      "lon": 125.4
+    },
+    "chongjin": {
+      "name": "Chongjin",
+      "lat": 41.8,
+      "lon": 129.78
+    },
+    "huchang": {
+      "name": "Huchang",
+      "lat": 40.45,
+      "lon": 128.45
+    },
+    "kumsong": {
+      "name": "Kumsong",
+      "lat": 38.5,
+      "lon": 126.95
+    },
+    "panmunjom": {
+      "name": "Panmunjom",
+      "lat": 37.96,
+      "lon": 126.67
+    },
+    "sinuiju": {
+      "name": "Sinuiju",
+      "lat": 40.1,
+      "lon": 124.4
+    },
+    "sariwon": {
+      "name": "Sariwon",
+      "lat": 38.5,
+      "lon": 125.75
+    },
+    "hegang": {
+      "name": "Hegang",
+      "lat": 40.85,
+      "lon": 129.65
+    },
+    "kanggye": {
+      "name": "Kanggye",
+      "lat": 40.97,
+      "lon": 126.6
+    },
+    "hvesan": {
+      "name": "Hvesan",
+      "lat": 41.4,
+      "lon": 128.2
+    },
+    "sunchon": {
+      "name": "Sunchon",
+      "lat": 39.42,
+      "lon": 125.93
+    },
+    "kowon": {
+      "name": "Kowon",
+      "lat": 39.43,
+      "lon": 127.25
+    },
+    "pukchang": {
+      "name": "Pukchang",
+      "lat": 39.5,
+      "lon": 125.2
+    },
+    "sakchu": {
+      "name": "Sakchu",
+      "lat": 40.4,
+      "lon": 125.0
+    },
+    "taechon": {
+      "name": "Taechon",
+      "lat": 39.7,
+      "lon": 125.5
+    },
+    "kujang": {
+      "name": "Kujang",
+      "lat": 39.87,
+      "lon": 126.05
+    },
+    "jungsan": {
+      "name": "Jungsan",
+      "lat": 39.82,
+      "lon": 125.78
+    },
+    "sungam": {
+      "name": "Sungam",
+      "lat": 40.15,
+      "lon": 128.35
+    },
+    "panghyon": {
+      "name": "Panghyon",
+      "lat": 39.85,
+      "lon": 125.25
+    },
+    "mupyong": {
+      "name": "Mupyong",
+      "lat": 40.55,
+      "lon": 128.45
+    },
+    "chunggang": {
+      "name": "Chunggang",
+      "lat": 41.05,
+      "lon": 126.85
+    },
+    "hoeryong": {
+      "name": "Hoeryong",
+      "lat": 42.43,
+      "lon": 129.75
+    },
+    "kilju": {
+      "name": "Kilju",
+      "lat": 40.96,
+      "lon": 129.33
+    },
+    "kimchaek": {
+      "name": "Kimchaek",
+      "lat": 40.67,
+      "lon": 129.18
+    },
+    "myongchon": {
+      "name": "Myongchon",
+      "lat": 41.15,
+      "lon": 129.35
+    },
+    "orangu": {
+      "name": "Orangu",
+      "lat": 40.85,
+      "lon": 129.65
+    },
+    "pungsan": {
+      "name": "Pungsan",
+      "lat": 40.85,
+      "lon": 128.35
+    },
+    "samdung": {
+      "name": "Samdung",
+      "lat": 40.55,
+      "lon": 128.85
+    },
+    "sangnam": {
+      "name": "Sangnam",
+      "lat": 40.25,
+      "lon": 128.65
+    },
+    "songnam": {
+      "name": "Songnam",
+      "lat": 40.45,
+      "lon": 128.55
+    },
+    "sudong": {
+      "name": "Sudong",
+      "lat": 39.35,
+      "lon": 126.75
+    },
+    "taehung": {
+      "name": "Taehung",
+      "lat": 40.95,
+      "lon": 128.75
+    },
+    "unchon": {
+      "name": "Unchon",
+      "lat": 39.75,
+      "lon": 125.35
+    },
+    "yonghung": {
+      "name": "Yonghung",
+      "lat": 39.95,
+      "lon": 127.45
+    },
+    "yongyu": {
+      "name": "Yongyu",
+      "lat": 39.85,
+      "lon": 124.75
+    },
+    "yonsa": {
+      "name": "Yonsa",
+      "lat": 41.35,
+      "lon": 129.05
+    },
+    "yongbyon": {
+      "name": "Yongbyon",
+      "lat": 39.82,
+      "lon": 125.78
+    },
+    "sunchon-vls": {
+      "name": "Sunchon VLS",
+      "lat": 39.42,
+      "lon": 125.93
+    },
+    "unknown": {
+      "name": "Unknown",
+      "lat": 40.0,
+      "lon": 127.0
+    }
+  }
+}

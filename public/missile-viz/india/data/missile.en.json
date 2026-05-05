@@ -1,0 +1,117 @@
+{
+ "slv-3": {
+  "name": "SLV-3",
+  "description": "SLV-3",
+  "type": "SLV"
+ },
+ "aslv": {
+  "name": "ASLV",
+  "description": "ASLV",
+  "type": "SLV"
+ },
+ "prithvi": {
+  "name": "Prithvi",
+  "description": "Prithvi",
+  "type": "SRBM"
+ },
+ "agni-td": {
+  "name": "Agni-TD",
+  "description": "Agni-TD",
+  "type": "MRBM"
+ },
+ "pslv": {
+  "name": "PSLV",
+  "description": "PSLV",
+  "type": "SLV"
+ },
+ "prithvi-2": {
+  "name": "Prithvi-2",
+  "description": "Prithvi-2",
+  "type": "SRBM"
+ },
+ "agni-2": {
+  "name": "Agni-2",
+  "description": "Agni-2",
+  "type": "MRBM"
+ },
+ "dhanush": {
+  "name": "Dhanush",
+  "description": "Dhanush",
+  "type": "SRBM"
+ },
+ "gslv-mk-1": {
+  "name": "GSLV Mk-1",
+  "description": "GSLV Mk-1",
+  "type": "SLV"
+ },
+ "brahmos": {
+  "name": "Brahmos",
+  "description": "Brahmos",
+  "type": "CM"
+ },
+ "agni-1": {
+  "name": "Agni-1",
+  "description": "Agni-1",
+  "type": "SRBM"
+ },
+ "prithvi-3": {
+  "name": "Prithvi-3",
+  "description": "Prithvi-3",
+  "type": "SRBM"
+ },
+ "agni-3": {
+  "name": "Agni-3",
+  "description": "Agni-3",
+  "type": "IRBM"
+ },
+ "aad": {
+  "name": "AAD",
+  "description": "AAD",
+  "type": "ABM"
+ },
+ "k-15": {
+  "name": "K-15",
+  "description": "K-15",
+  "type": "SLBM"
+ },
+ "shaurya": {
+  "name": "Shaurya",
+  "description": "Shaurya",
+  "type": "MRBM"
+ },
+ "gslv-mk-2": {
+  "name": "GSLV Mk-2",
+  "description": "GSLV Mk-2",
+  "type": "SLV"
+ },
+ "agni-4": {
+  "name": "Agni-4",
+  "description": "Agni-4",
+  "type": "IRBM"
+ },
+ "agni-5": {
+  "name": "Agni-5",
+  "description": "Agni-5",
+  "type": "ICBM"
+ },
+ "nirbhay": {
+  "name": "Nirbhay",
+  "description": "Nirbhay",
+  "type": "LACM"
+ },
+ "gslv-mk-3": {
+  "name": "GSLV Mk-3",
+  "description": "GSLV Mk-3",
+  "type": "SLV"
+ },
+ "k-4": {
+  "name": "K-4",
+  "description": "K-4",
+  "type": "SLBM"
+ },
+ "pdv-mk-ii": {
+  "name": "PDV-Mk II",
+  "description": "PDV-Mk II",
+  "type": "ABM"
+ }
+}

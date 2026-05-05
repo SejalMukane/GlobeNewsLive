@@ -1,0 +1,49 @@
+{
+  "facilities": {
+    "sonmiani-terminal": {
+      "name": "Sonmiani Terminal",
+      "lat": 25.2167,
+      "lon": 66.7500
+    },
+    "tilla-test-range": {
+      "name": "Tilla Test Range",
+      "lat": 33.6844,
+      "lon": 73.0479
+    },
+    "tilla-satellite-launch-centre": {
+      "name": "Tilla Satellite Launch Centre",
+      "lat": 33.6844,
+      "lon": 73.0479
+    },
+    "jinnah-naval-test-range": {
+      "name": "Jinnah Naval Test Range",
+      "lat": 25.2167,
+      "lon": 66.7500
+    },
+    "paf-base-masroor": {
+      "name": "PAF Base Masroor",
+      "lat": 24.8933,
+      "lon": 66.9333
+    },
+    "muzaffarabad": {
+      "name": "Muzaffarabad",
+      "lat": 34.3700,
+      "lon": 73.4700
+    },
+    "rawalpindi": {
+      "name": "Rawalpindi",
+      "lat": 33.5651,
+      "lon": 73.0169
+    },
+    "unknown": {
+      "name": "Unknown",
+      "lat": 30.3753,
+      "lon": 69.3451
+    },
+    "unknown-3": {
+      "name": "Unknown",
+      "lat": 30.3753,
+      "lon": 69.3451
+    }
+  }
+}
