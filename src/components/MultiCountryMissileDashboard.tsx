@@ -205,27 +205,7 @@ export default function MultiCountryMissileDashboard() {
         { name: 'Unknown', value: unknownCount, fill: OUTCOME_COLORS.unknown }
       ];
 
-      // Missile type breakdown
-      const typeMap: Record<string, { count: number; type: string }> = {};
-      testData.forEach((test: any) => {
-        const missileName = test.missile || 'Unknown';
-        const missileType = rangeMap[missileName]?.type || 'Unknown';
-        if (!typeMap[missileName]) {
-          typeMap[missileName] = { count: 0, type: missileType };
-        }
-        typeMap[missileName].count++;
-      });
-      
-      const missileTypeBreakdown = Object.entries(typeMap)
-        .map(([name, data]) => ({ 
-          name, 
-          value: data.count,
-          type: data.type
-        }))
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 10);
-
-      // Missile range data
+      // Missile range data FIRST (before typeMap)
       const rangeMap: Record<string, { range: number; type: string }> = {
         'hatf-1': { range: 80, type: 'SRBM' },
         'hatf-2': { range: 180, type: 'SRBM' },
@@ -288,6 +268,27 @@ export default function MultiCountryMissileDashboard() {
         'pukguksong-3': { range: 2500, type: 'SLBM' }
       };
 
+      // Missile type breakdown - use rangeMap for types
+      const typeMap: Record<string, { count: number; type: string }> = {};
+      testData.forEach((test: any) => {
+        const missileName = (test.missile || 'Unknown').toLowerCase();
+        const missileType = rangeMap[missileName]?.type || 'Unknown';
+        if (!typeMap[missileName]) {
+          typeMap[missileName] = { count: 0, type: missileType };
+        }
+        typeMap[missileName].count++;
+      });
+      
+      const missileTypeBreakdown = Object.entries(typeMap)
+        .map(([name, data]) => ({ 
+          name, 
+          value: data.count,
+          type: data.type
+        }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 10);
+
+      // Missile range data - only missiles with test counts
       const missileRangeData = Object.entries(rangeMap)
         .map(([name, data]) => ({
           name: name.toUpperCase(),
@@ -295,7 +296,7 @@ export default function MultiCountryMissileDashboard() {
           type: data.type,
           count: typeMap[name]?.count || 0
         }))
-        .filter(item => item.count > 0)  // Only show missiles that actually have tests
+        .filter(item => item.count > 0)  // Only show missiles that have tests
         .sort((a, b) => b.range - a.range)
         .slice(0, 15);
 
