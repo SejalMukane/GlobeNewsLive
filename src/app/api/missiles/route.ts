@@ -27,16 +27,16 @@ let cachedData: {
 const CACHE_DURATION = 3600000; // 1 hour
 
 /**
- * Load JSON data from nk-missile-tests directory
+ * Load JSON data from public/missile-data directory
  */
 function loadMissileData() {
-  const nkMissileTestsPath = path.join(process.cwd(), '..', 'nk-missile-tests', 'data');
+  const missileDataPath = path.join(process.cwd(), 'public', 'missile-data');
 
   try {
     // Load English data files
-    const missileFile = fs.readFileSync(path.join(nkMissileTestsPath, 'missile.en.json'), 'utf8');
-    const facilityFile = fs.readFileSync(path.join(nkMissileTestsPath, 'facility.en.json'), 'utf8');
-    const testFile = fs.readFileSync(path.join(nkMissileTestsPath, 'test.en.json'), 'utf8');
+    const missileFile = fs.readFileSync(path.join(missileDataPath, 'missile.en.json'), 'utf8');
+    const facilityFile = fs.readFileSync(path.join(missileDataPath, 'facility.en.json'), 'utf8');
+    const testFile = fs.readFileSync(path.join(missileDataPath, 'test.en.json'), 'utf8');
 
     const missiles: Record<string, MissileInfo> = JSON.parse(missileFile);
     const facilitiesRaw = JSON.parse(facilityFile);
