@@ -44,7 +44,7 @@ interface NewsItem {
 const COUNTRY_DATA = {
   'north-korea': {
     label: 'North Korea',
-    dataFile: '/missile-viz/data/test.en.json',
+    dataFile: '/missile-data/test.en.json',
     color: '#ef4444',
     bgColor: 'from-red-950/40 to-red-900/20',
     borderColor: 'border-red-500/30',
@@ -52,7 +52,7 @@ const COUNTRY_DATA = {
   },
   'iran': {
     label: 'Iran',
-    dataFile: '/missile-viz/iran/data/test.en.json',
+    dataFile: '/missile-data/iran_missiles.json',
     color: '#f97316',
     bgColor: 'from-orange-950/40 to-orange-900/20',
     borderColor: 'border-orange-500/30',
@@ -60,7 +60,7 @@ const COUNTRY_DATA = {
   },
   'india': {
     label: 'India',
-    dataFile: '/missile-viz/india/data/test.en.json',
+    dataFile: '/missile-data/india_missiles.json',
     color: '#3b82f6',
     bgColor: 'from-blue-950/40 to-blue-900/20',
     borderColor: 'border-blue-500/30',
@@ -68,7 +68,7 @@ const COUNTRY_DATA = {
   },
   'pakistan': {
     label: 'Pakistan',
-    dataFile: '/missile-viz/pakistan/data/test.en.json',
+    dataFile: '/missile-data/pakistan_missiles.json',
     color: '#22c55e',
     bgColor: 'from-green-950/40 to-green-900/20',
     borderColor: 'border-green-500/30',
@@ -119,7 +119,19 @@ export default function MultiCountryMissileDashboard() {
       const rawData = await response.json();
       
       const testData = rawData.timeBins?.flatMap((bin: any) => 
-        (bin.data || []).map((test: any) => ({...test, year: bin.year}))
+        (bin.data || []).map((test: any) => {
+          // Normalize the test data - handle different field names
+          const outcome = test.outcome || test.status || 'unknown';
+          const missile = test.missile || test.name || 'Unknown';
+          const year = bin.year || new Date(test.date).getFullYear();
+          return {
+            ...test,
+            outcome: outcome.toLowerCase(),
+            missile,
+            year,
+            date: test.date || new Date().toISOString().split('T')[0]
+          };
+        })
       ) || [];
 
       if (testData.length === 0) {
